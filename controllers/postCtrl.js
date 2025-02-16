@@ -40,7 +40,7 @@ const postCtrl = {
     crearPostPendiente: async (req, res) => {
         try {
             const { postData, images } = req.body;
-            const {estado, category,subCategory,title,description,price,unidaddeprecio,oferta,change,wilaya,commune,
+            const {  category,subCategory,title,description,price,unidaddeprecio,oferta,change,wilaya,commune,
                 quartier,email,telefono,contadordevisitas,informacion,comentarios,attributes,   } = postData || {};
 
             if (!title || !category || !subCategory ) {
@@ -48,7 +48,7 @@ const postCtrl = {
             }
 
             const newPost = new Posts({
-               estado, category,subCategory,title,description,price,unidaddeprecio,oferta,change,wilaya,commune,
+                category,subCategory,title,description,price,unidaddeprecio,oferta,change,wilaya,commune,
                 quartier,email,telefono,contadordevisitas,informacion,comentarios,attributes,
                 attributes,
                 images,

@@ -22,7 +22,7 @@ import CardBodyTitle from './home/post_card/CardBodyTitle';
             <CardBodyCarousel post={post} theme={theme} />
             <CardFooterCommentLikes post={post} />
             {isPostDetailPage && <DescriptionAttributePost post={post} />}
-            <ButtonDetails post={post} /> 
+            
             {isPostDetailPage && <DescriptionPost post={post} />}
             {isPostDetailPage && <InformationUserPost post={post} />}
            

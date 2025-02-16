@@ -18,7 +18,7 @@ const CardHeader = ({ post }) => {
     const handleAprovePost = () => {
         if (window.confirm("¿Deseas aprobar este post?")) {
             dispatch(aprovarPostPendiente({post, auth}));
-            history.push("/postsPendientes");
+            history.push("/homepostspendientes");
         }
     };
     

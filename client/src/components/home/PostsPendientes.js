@@ -13,7 +13,7 @@ const PostsPendientes = () => {
     const history = useHistory();
     const [load, setLoad] = useState(false);
     const [postsPendientes, setPostsPendientes] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [ , setSelectedImage] = useState(null);
 
     useEffect(() => {
         if (homePostsAprove && homePostsAprove.posts) {
@@ -128,7 +128,7 @@ const PostsPendientes = () => {
         <LoadMoreBtn result={homePostsAprove.result} page={homePostsAprove.page} load={load} handleLoadMore={handleLoadMore} />
     </div>
 
-    {/* MODAL PARA MOSTRAR LA IMAGEN EN GRANDE */}
+    {/* MODAL PARA MOSTRAR LA IMAGEN EN GRANDE  
     <div className="modal fade" id="imageModal" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -141,7 +141,7 @@ const PostsPendientes = () => {
                 </div>
             </div>
         </div>
-    </div>
+                </div>*/}
 </div>
     );
 };
