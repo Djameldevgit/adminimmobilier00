@@ -1,5 +1,5 @@
 .details-button {
- 
+ background-color: rgb(39, 39, 165);
   border: none; /* Sin borde */
   color: white; /* Color del texto */
   padding: 10px 20px; /* Espaciado interno */
@@ -14,7 +14,7 @@
 }
 
 .details-button:hover {
-  background-color: #396a7a; /* Nuevo color de fondo al pasar el ratón */
+  background-color: #549cb4; /* Nuevo color de fondo al pasar el ratón */
 }
 
  

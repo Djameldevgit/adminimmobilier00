@@ -46,7 +46,7 @@ const CardFooterCommentLikes = ({ post }) => {
 
 
 
-            <div className="d-flex justify-content-between mt-4 mx-3">
+            <div className="d-flex justify-content-between mt-2 mx-3">
                
                 <div>
                     <LikeButton
