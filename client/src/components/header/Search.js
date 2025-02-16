@@ -4,10 +4,11 @@ import { getDataAPI } from '../../utils/fetchData'
 import { GLOBALTYPES } from '../../redux/actions/globalTypes'
 import UserCard from '../UserCard'
 import LoadIcon from '../../images/loading.gif'
+import PostCard from '../PostCard'
 
 const Search = () => {
     const [search, setSearch] = useState('')
-    const [users, setUsers] = useState([])
+    const [posts, setPosts] = useState([])
 
     const { auth } = useSelector(state => state)
     const dispatch = useDispatch()
@@ -20,8 +21,8 @@ const Search = () => {
 
         try {
             setLoad(true)
-            const res = await getDataAPI(`search?username=${search}`, auth.token)
-            setUsers(res.data.users)
+            const res = await getDataAPI(`searchpost?title=${search}`, auth.token)
+            setPosts(res.data.posts)
             setLoad(false)
         } catch (err) {
             dispatch({
@@ -32,7 +33,7 @@ const Search = () => {
 
     const handleClose = () => {
         setSearch('')
-        setUsers([])
+        setPosts([])
     }
 
     return (
@@ -46,7 +47,7 @@ const Search = () => {
             </div>
 
             <div className="close_search" onClick={handleClose}
-            style={{opacity: users.length === 0 ? 0 : 1}} >
+            style={{opacity: posts.length === 0 ? 0 : 1}} >
                 &times;
             </div>
 
@@ -54,12 +55,12 @@ const Search = () => {
 
             { load && <img className="loading" src={LoadIcon} alt="loading"  /> }
 
-            <div className="users">
+            <div  >
                 {
-                    search && users.map(user => (
-                        <UserCard 
-                        key={user._id} 
-                        user={user} 
+                    search && posts.map(post => (
+                        <PostCard
+                        key={post._id} 
+                        post={post} 
                         border="border"
                         handleClose={handleClose} 
                         />

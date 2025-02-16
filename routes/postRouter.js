@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const postCtrl = require('../controllers/postCtrl')
 const auth = require('../middleware/auth')
-
+router.get('/searchpost', auth, postCtrl.searchPost)
 router.post('/posts', auth,postCtrl.crearPostPendiente)
 router.get('/posts/pendientes', auth,postCtrl.getPostsPendientes)
 router.patch('/aprovarpost/:id/aprovado', auth, postCtrl.aprobarPostPendiente);

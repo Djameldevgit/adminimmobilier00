@@ -23,13 +23,19 @@ import SocketClient from './SocketClient'
 
 import { getNotifies } from './redux/actions/notifyAction'
 import CallModal from './components/message/CallModal'
-import PostsPendientes from './components/home/PostsPendientes'
+
 import { getPostsPendientes } from './redux/actions/postAproveAction'
 import { getPosts } from './redux/actions/postAction'
 import { getUsers } from './redux/actions/userAction'
-import Searchusers from './pages/users/searchusers'
+ 
 import { getBlockedUsers } from './redux/actions/userBlockAction'
-import Bloquearusuarios from './pages/bloquearusuarios'
+ 
+import Searchusers from './pages/administracion/searchusers'
+import Bloquearusuarios from './pages/administracion/bloquearusuarios'
+import Listausuariosbloqueados from './pages/administracion/listausuariosbloqueados'
+import Roles from './pages/administracion/roles'
+import Homepostspendientes from './pages/administracion/homepostspendientes'
+ 
  
 
 function App() {
@@ -89,12 +95,13 @@ function App() {
           <Route exact path="/" component={auth.token ? Home : Login} />
           <Route exact path="/register" component={Register} />
 
-          <Route exact path="/postsPendientes/index" component={auth.token ? PostsPendientes : Login} />
+          <Route exact path="/administracion/homepostspendientes" component={auth.token ?Homepostspendientes   : Login} />
+          <Route exact path="/administracion/searchusers" component={auth.token ? Searchusers : Login} />
+          <Route exact path="/administracion/bloquearusuarios" component={auth.token ? Bloquearusuarios : Login} />
+          <Route exact path="/administracion/listausuariosbloqueados" component={auth.token ? Listausuariosbloqueados: Login} />
+          <Route exact path="/administracion/roles" component={auth.token ? Roles: Login} />
 
-          <Route exact path="/users/searchusers" component={auth.token ? Searchusers : Login} />
-          <Route exact path="/bloquearusuarios" component={auth.token ? Bloquearusuarios : Login} />
 
- 
 
           <PrivateRouter exact path="/:page" component={PageRender} />
           <PrivateRouter exact path="/:page/:id" component={PageRender} />

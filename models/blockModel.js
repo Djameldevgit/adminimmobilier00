@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const UserBlockSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true, unique: true },
-  esBloqueado: { type: Boolean, default: false }, // Cambio de `esBloqueado` a `isBlocked`
-  motivo: { type: String, default: null }, // Razón del bloqueo
-  fechaBloqueo: { type: Date, default: null }, // Fecha en la que fue bloqueado
-  fechaDesbloqueo: { type: Date, default: null } // Fecha en la que fue desbloqueado
-}, { timestamps: true }); // timestamps agrega automáticamente `createdAt` y `updatedAt`
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true, unique: true }, // Verifica el nombre correcto de la colección
+  motivo: { type: String, default: "Sin especificar" }, // Razón del bloqueo
+  fechaBloqueo: { type: Date, default: Date.now }, // Momento en que se bloqueó
+  fechaLimite: { type: Date, default: null }, // Fecha en que expira el bloqueo
+  esBloqueado: { type: Boolean, default: true } // Para indicar si sigue bloqueado
+}, { timestamps: true }); // `createdAt` = fecha de bloqueo
 
-module.exports = mongoose.model('blockuser', UserBlockSchema);
+module.exports = mongoose.model('BlockUser', UserBlockSchema);
+

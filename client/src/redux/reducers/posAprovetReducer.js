@@ -1,11 +1,12 @@
 import { POST_TYPES_APROVE } from '../actions/postAproveAction';
  
 const initialState = {
-    loading: false,
     posts: [],
-    result: 0,
-    page: 2
-}
+    loading: false,
+    page: 1,
+    result: 0
+};
+
 
 const postAproveReducer = (state = initialState, action) => {
     switch (action.type) {

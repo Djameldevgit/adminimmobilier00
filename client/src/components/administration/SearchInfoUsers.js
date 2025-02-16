@@ -6,6 +6,10 @@ import { getDataAPI } from "../../utils/fetchData";
 import { USER_TYPES } from "../../redux/actions/userAction";
 import UserCard from "../UserCard";
 import BloquearUsuarios from "./BloquearUsuarios";
+import ListaUsuariosBloqueados from "./ListaUsariosBloqueados";
+import RolesAdmin from "./RolesAdmin";
+import Search from "./Search";
+
 
 const formatDate = (dateString) => {
   const options = { year: "numeric", month: "long", day: "numeric" };
@@ -17,19 +21,7 @@ const SearchInfoUsers = () => {
   const dispatch = useDispatch();
   const [load, setLoad] = useState(false);
   const [search, setSearch] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); // Estado para guardar el usuario seleccionado
-
-  const handleOpenModal = (user) => {
-    setSelectedUser(user); // Guarda el usuario seleccionado
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedUser(null); // Resetea el usuario seleccionado
-    setModalOpen(false);
-  };
-
+ 
   const handleLoadMore = async () => {
     setLoad(true);
     const res = await getDataAPI(`users?limit=${homeUsers.page * 9}`, auth.token);
@@ -51,15 +43,7 @@ const SearchInfoUsers = () => {
   return (
     <div className="container">
       <div className="row mb-4">
-        <div className="col-md-12">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Buscar por nombre o email"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        <Search/>
       </div>
 
       <div className="table-responsive">
@@ -82,15 +66,17 @@ const SearchInfoUsers = () => {
                 <td>{formatDate(user.createdAt)}</td>
                 <td>
                   <div className="action-dropdown">
-                    <button className="btn btn-danger dropdown-toggle" type="button">
+
+                    <button className="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown">
                       Acción
                     </button>
+
                     <div className="dropdown-menu">
                       <p className="dropdown-item"  >Editar</p>
                       <p className="dropdown-item"  >Eliminar</p>
-                      <BloquearUsuarios open={modalOpen} user={selectedUser} handleClose={handleCloseModal} />
-
+                     
                     </div>
+                   
                   </div>
                 </td>
               </tr>
@@ -103,8 +89,7 @@ const SearchInfoUsers = () => {
 
       <LoadMoreBtn result={homeUsers.result} page={homeUsers.page} load={load} handleLoadMore={handleLoadMore} />
 
-      {/* Renderiza el modal con el usuario seleccionado */}
-      <BloquearUsuarios open={modalOpen} user={selectedUser} handleClose={handleCloseModal} />
+
     </div>
   );
 };

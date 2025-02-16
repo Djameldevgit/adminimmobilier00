@@ -1,8 +1,10 @@
 import { USER_TYPES_BLOCK } from '../actions/userBlockAction';
 
 const initialState = {
+    blockedUsers: {},
     loading: false,
-    blockedUsers: [],
+    error: null
+     
 };
 
 const userBlockReducer = (state = initialState, action) => {
@@ -13,15 +15,11 @@ const userBlockReducer = (state = initialState, action) => {
                 loading: action.payload,
             };
 
-        case USER_TYPES_BLOCK.BLOCK_USER: {
-            const usuarioExiste = state.blockedUsers.some(user => user._id === action.payload._id);
-            if (usuarioExiste) return state; // Evitar duplicados
-
-            return {
-                ...state,
-                blockedUsers: [...state.blockedUsers, action.payload],
-            };
-        }
+            case USER_TYPES_BLOCK.BLOCK_USER:
+                return { 
+                    ...state, 
+                    blockedUsers: action.payload // 🔹 Aquí guardamos solo el objeto `block`
+                };
 
         case USER_TYPES_BLOCK.UNBLOCK_USER:
             return {

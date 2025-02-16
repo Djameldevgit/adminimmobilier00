@@ -18,7 +18,7 @@ const Header = () => {
                 <Link to="/" className="logo">
                     <h1 className="navbar-brand text-uppercase p-0 m-0"
                     onClick={() => window.scrollTo({top: 0})}>
-                     {t('realestate', { lng: languageReducer.language })}
+                   IMMOBILIER
                     </h1>
                     <img src='icon-web-01.png'  className='imagelogo'/> 
 

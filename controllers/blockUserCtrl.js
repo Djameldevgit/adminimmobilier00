@@ -2,91 +2,109 @@ const Users = require('../models/userModel');
 const BlockUser = require('../models/blockModel'); // Importar modelo de bloqueos
 
 const userCtrl = {
-    // 🔴 Bloquear usuario
+    /*
+        blockUser: async (req, res) => {
+            try {
+                const { motivo, fechaLimite} = req.body;
+    console.log(req.body)
+                // Verificar si el usuario existe
+                const user = await Users.findById(req.params.id);
+                if (!user) {
+                    return res.status(404).json({ msg: "Usuario no encontrado." });
+                }
+    
+                // Verificar si ya está bloqueado en la colección BlockUser
+                const usuarioBloqueado = await BlockUser.findOne({ user: req.params.id });
+                if (usuarioBloqueado) {
+                    return res.status(400).json({ msg: "Este usuario ya está bloqueado." });
+                }
+    
+                // Crear el registro de bloqueo
+                const blockedUser = new BlockUser({
+                    user: req.params.id,
+                    motivo: motivo  ,
+                    fechaLimite: fechaLimite ? new Date(fechaLimite) : null
+    
+                });
+    
+                await blockedUser.save();
+    
+                res.json({
+                    msg: "Usuario bloqueado exitosamente.",
+                    block: blockedUser
+                });
+    
+            } catch (err) {
+                return res.status(500).json({ msg: err.message || "Error al bloquear usuario." });
+            }
+        },*/
     blockUser: async (req, res) => {
         try {
-            const { userId } = req.params;
-            const { motivo, fechaBloqueo, fechaDesbloqueo, esBloqueado} = req.body;
+            const { motivo,fechaBloqueo,  fechaLimite } = req.body;//
 
-            if (!userId) {
-                return res.status(400).json({ msg: "El ID del usuario es requerido." });
-            }
+            console.log(req.body)
+            const user = await Users.findById(req.params.id);
+            if (!user) return res.status(404).json({ msg: "Usuario no encontrado." });
 
-            // Verificar si el usuario existe
-            const user = await Users.findById(userId).lean();
-            if (!user) {
-                return res.status(404).json({ msg: "Usuario no encontrado." });
-            }
-
-            // Verificar si ya está bloqueado
-            const existingBlock = await BlockUser.findOne({ user: userId });
-            if (existingBlock && existingBlock.isBlocked) {
+            if (user.esBloqueado) {
                 return res.status(400).json({ msg: "Este usuario ya está bloqueado." });
             }
 
-            // Crear el registro de bloqueo
-            const blockRecord = new BlockUser({
-                user: userId,
-                esBloqueado: true,
+            // Crear el registro en BlockUser
+            const blockedUser = new BlockUser({
+                user: req.params.id,
                 motivo: motivo || "Sin especificar",
-                fechaBloqueo: fechaBloqueo || new Date().toISOString(),
-                fechaDesbloqueo: fechaDesbloqueo || null
+               fechaBloqueo: fechaBloqueo ? new Date(fechaBloqueo) : new Date(), // Si no se envía, usa la fecha actual
+                fechaLimite: fechaLimite,
+                esBloqueado: true
             });
 
-            await blockRecord.save();
+            await blockedUser.save();
 
-            res.json({ 
-                msg: "Usuario bloqueado exitosamente.",
-                block: blockRecord
-            });
+            // Actualizar estado en Users
+            user.esBloqueado = true;
+            await user.save();
 
+            res.json({ msg: "Usuario bloqueado exitosamente." });
         } catch (err) {
-            return res.status(500).json({ msg: err.message || "Error al bloquear usuario." });
+            return res.status(500).json({ msg: err.message })
         }
     },
+
+
 
     // 🟢 Desbloquear usuario
     unblockUser: async (req, res) => {
         try {
-            const { userId } = req.params;
+            const user = await Users.findById(req.params.id);
+            if (!user) return res.status(404).json({ msg: "Usuario no encontrado." });
 
-            if (!userId) {
-                return res.status(400).json({ msg: "El ID del usuario es requerido." });
+            if (!user.esBloqueado) {
+                return res.status(400).json({ msg: "Este usuario no está bloqueado." });
             }
 
-            // Verificar si el usuario tiene un registro de bloqueo
-            const blockRecord = await BlockUser.findOne({ user: userId });
-            if (!blockRecord || !blockRecord.esBloqueado) {
-                return res.status(404).json({ msg: "Este usuario no está bloqueado." });
-            }
+            // Eliminar registro de bloqueo
+            await BlockUser.findOneAndDelete({ user: req.params.id });
 
-            // Actualizar el estado de bloqueo en lugar de eliminar
-            blockRecord.esBloqueado = false;
-            blockRecord.motivo = ""; // Se limpia el motivo
-            blockRecord.fechaDesbloqueo = new Date().toISOString(); // Registrar fecha de desbloqueo
-            await blockRecord.save();
+            // Actualizar el estado en Users
+            user.esBloqueado = false;
+            await user.save();
 
             res.json({ msg: "Usuario desbloqueado exitosamente." });
-
         } catch (err) {
-            return res.status(500).json({ msg: err.message || "Error al desbloquear usuario." });
+            return res.status(500).json({ msg: err.message })
         }
     },
 
+
     // 🔍 Obtener todos los usuarios bloqueados
-    getUsersBlock: async (req, res) => {
+    getBlockedUsers: async (req, res) => {
         try {
-            const blockedUsers = await BlockUser.find({ esBloqueado: true }) // Solo obtener los bloqueados
-                .populate('user', 'username email') // Obtener datos del usuario
-                .select('-__v'); // Excluir versión de Mongoose
+            const blockedUsers = await BlockUser.find().populate('user', 'username email'); // Pobla el campo 'user'
 
-            res.json({
-                blockedUsers,
-                total: blockedUsers.length
-            });
-
+            return res.json({ success: true, blockedUsers });
         } catch (err) {
-            return res.status(500).json({ msg: err.message || "Error al obtener usuarios bloqueados." });
+            return res.status(500).json({ msg: err.message })
         }
     }
 };

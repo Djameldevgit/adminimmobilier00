@@ -16,11 +16,12 @@ import message from './messageReducer'
 import online from './onlineReducer'
 import call from './callReducer'
 import peer from './peerReducer'
- 
+
 import languageReducer from './languageReducer';
 import homePostsAprove from './posAprovetReducer'
 import homeUsers from './userReducer'
 import userBlockReducer from './userBlcokReducer'
+import roleeReducer from './roleeReducer'
 
 export default combineReducers({
     auth,
@@ -39,5 +40,5 @@ export default combineReducers({
     online,
     call,
     peer,
-    languageReducer,homePostsAprove,homeUsers,userBlockReducer
+    languageReducer,homePostsAprove,homeUsers,userBlockReducer, roleeReducer
 })

@@ -18,6 +18,25 @@ class APIfeatures {
 }
 
 const postCtrl = {
+
+    searchPost: async (req, res) => {
+        try {
+            const query = req.query.title;
+
+            // Utiliza una expresión regular insensible a mayúsculas y minúsculas
+            const regex = new RegExp(query, 'i');
+
+            const posts = await Posts.find({ title: { $regex: regex } })
+                .limit(10)
+                .select("title subCategory");
+
+            res.json({ posts });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+
+
     crearPostPendiente: async (req, res) => {
         try {
             const { postData, images } = req.body;

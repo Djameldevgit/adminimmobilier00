@@ -1,10 +1,10 @@
 import React from 'react'
- import SearchInfoUsers from '../../components/administration/SearchInfoUsers' 
+import SearchInfoUsers from '../../components/administration/SearchInfoUsers'
  
 const Searchusers = () => {
   return (
     <div>
-<SearchInfoUsers/>
+ <SearchInfoUsers/>
     </div>
   )
 }

@@ -262,6 +262,8 @@ const userCtrl = {
             const users = await features.query
                 .sort('-createdAt')
                 .populate("user likes", "avatar username followers following") // Popula seguidores y siguiendo
+                .populate("blockuser") // Popula seguidores y siguiendo
+             
                 .populate({
                     path: "comments",
                     populate: {

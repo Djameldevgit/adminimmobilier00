@@ -71,10 +71,13 @@ const Menu = () => {
                         <div className='language'>
                             <LanguageSelector />
                         </div>
-                        <Link className="dropdown-item" to='/bloquearusuarios'> bloquear usuarios</Link>
-                        <Link className="dropdown-item" to='/users/searchusers'> search users</Link>
                         <Link className="dropdown-item" to='/annonces'> Ajoute un annonce</Link>
-                        <Link className="dropdown-item" to="/postsPendientes">posts pendientes</Link>
+                        <Link className="dropdown-item" to='/administracion/roles'> roles</Link>
+                        <Link className="dropdown-item" to='/administracion/bloquearusuarios'> bloquear usuarios</Link>
+                        <Link className="dropdown-item" to='/administracion/listausuariosbloqueados'> Lista usuarios bloqueados</Link>
+                        <Link className="dropdown-item" to='/administracion/searchusers'> search users</Link>
+                        
+                        <Link className="dropdown-item" to='/administracion/homepostspendientes'>posts pendientes</Link>
                         <Link className="dropdown-item" to={`/profile/${auth.user._id}`}>Profile</Link>
 
                         <label htmlFor="theme" className="dropdown-item"
