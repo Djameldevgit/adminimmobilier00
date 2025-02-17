@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
  
 import { GLOBALTYPES } from '../redux/actions/globalTypes';
-import { createPost ,updatePost} from '../redux/actions/postAction';
+import { crearPostPendiente ,updatePost} from '../redux/actions/postAproveAction';
  
 import { imageShow, videoShow } from '../utils/mediaShow'
  
@@ -13,7 +13,7 @@ const StatusModal = () => {
     const dispatch = useDispatch()
 
     const initilastate = {
-        content: '',
+        title: '',
         category: 'immobilier',
         subCategory: 'vente',
         attributes: {
@@ -102,7 +102,7 @@ const StatusModal = () => {
         if (status.onEdit) {
             dispatch(updatePost({ postData, images, auth, status }));
         } else {
-            dispatch(createPost({ postData, images, auth, socket }));
+            dispatch(crearPostPendiente({ postData, images, auth, socket }));
         }
    
         setPostData(initilastate);
@@ -117,12 +117,18 @@ const StatusModal = () => {
         console.log(status); // Verifica que los valores de status sean correctos
         if (status.onEdit) {
             setPostData({
-                content: status.content || "",
+                title: status.title || "",
                 category: status.category || "",
                 subCategory: status.subCategory || "",
                 attributes: {
-                    nombre: status.attributes?.nombre || "",
-                    edad: status.attributes?.edad || "",
+                    superficie: status.attributes?.superficie || "",
+                    etage: status.attributes?.etage || "",
+                    piece: status.attributes?.piece || "",
+                    promoteurimmobilier: status.attributes?.promoteurimmobilier || "",
+                    parlepromoteurimmobilier: status.attributes?.parlepromoteurimmobilier || "",
+                    conditiondepeyement: status.attributes?.conditiondepeyement || "",
+                    specifications: status.attributes?.specifications || "",
+                    papiers: status.attributes?.papiers || "",
                 },
             });
             setImages(status.images || []);
@@ -135,33 +141,23 @@ const StatusModal = () => {
 
     const handleChangeInput = (e) => {
         const { name, value } = e.target;
-    
-        // Para los atributos anidados
+     
         if (name.startsWith("attributes.")) {
-            const key = name.split(".")[1]; // Obtiene 'nombre' o 'edad'
+            const key = name.split(".")[1];  
             setPostData((prev) => ({
                 ...prev,
                 attributes: {
                     ...prev.attributes,
-                    [key]: value, // Asigna el valor al atributo correspondiente
+                    [key]: value,  
                 },
             }));
         } else {
-            // Para los demás campos
+             
             setPostData((prev) => ({ ...prev, [name]: value }));
         }
     };
     
-    
-
-    /* const handleChangeInput = (e) => {
-       const { name, value} = e.target;
-         setPostData({ ...postData, [name]: value });
-          };*/
-
-
-
-
+     
     return (
         <div className="status_modal">
             <form onSubmit={handleSubmit}>
@@ -176,8 +172,8 @@ const StatusModal = () => {
 
                 <div className="status_body">
                     <div className='from-group'  >
-                        <input name="content" className='form-control' value={postData.content}
-                            placeholder='content'
+                        <input name="title" className='form-control' value={postData.title}
+                            placeholder='title'
                             onChange={handleChangeInput}
                         />
                     </div>

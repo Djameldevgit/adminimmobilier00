@@ -1,5 +1,5 @@
 import { GLOBALTYPES } from './globalTypes'
-import { imageUpload } from '../../utils/imageUpload'
+//import { imageUpload } from '../../utils/imageUpload'
 import { getDataAPI, patchDataAPI, deleteDataAPI } from '../../utils/fetchData'
 import { createNotify, removeNotify } from './notifyAction'
 
@@ -33,45 +33,16 @@ export const getPosts = (token) => async (dispatch) => {
 }
 
 
-export const updatePost = ({ postData, images, auth, status }) => async (dispatch) => {
-    
-    let media = [];
-    const imgNewUrl = images.filter(img => !img.url);
-    const imgOldUrl = images.filter(img => img.url);
-
-    // Verificar si hay imágenes nuevas o si la cantidad de imágenes ha cambiado
-    if (imgNewUrl.length > 0 || imgOldUrl.length !== status.images.length) {
-        try {
-            dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-
-            // Subir imágenes si hay nuevas
-            if (imgNewUrl.length > 0) media = await imageUpload(imgNewUrl);
-
-            // Actualizar el post
-            const res = await patchDataAPI(`post/${status._id}`, {
-                ...postData, // Enviar todos los campos de postData
-                images: [...imgOldUrl, ...media], // Incluir imágenes actuales + nuevas
-            }, auth.token);
-
-            dispatch({ type: POST_TYPES.UPDATE_POST, payload: res.data.newPost });
-            dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-
-        } catch (err) {
-            dispatch({
-                type: GLOBALTYPES.ALERT,
-                payload: { error: err.response.data.msg }
-            });
-        }
-    }
-};
+ 
 
 
 export const likePost = ({post, auth, socket}) => async (dispatch) => {
-    const newPost = {...post, likes: [...post.likes, auth.user]}
+    const newPost = {...post, likes: [...post.likes, auth.user]}//Aquí, newPost es una copia de la publicación original (post), pero con el usuario actual (auth.user) agregado al array de likes.
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost})
 
-    socket.emit('likePost', newPost)
-
+    socket.emit('likePost', newPost)//Esta línea utiliza Socket.IO para emitir un evento (likePost) al servidor.
+//El evento lleva como dato (payload) la nueva versión de la publicación (newPost), que incluye el "like" recién agregado
+//Sin esta línea, otros usuarios no verían el "like" hasta que recarguen la página o realicen una nueva
     try {
         await patchDataAPI(`post/${post._id}/like`, null, auth.token)
         

@@ -1,12 +1,13 @@
 import { USER_TYPES_BLOCK } from '../actions/userBlockAction';
 
 const initialState = {
-    blockedUsers: {},
+    blockedUsers: [],
     loading: false,
-    error: null
+    page: 1,
+    result: 0
      
 };
-
+ 
 const userBlockReducer = (state = initialState, action) => {
     switch (action.type) {
         case USER_TYPES_BLOCK.LOADING_USER:
@@ -27,12 +28,11 @@ const userBlockReducer = (state = initialState, action) => {
                 blockedUsers: state.blockedUsers.filter(user => user._id !== action.payload._id),
             };
 
-        case USER_TYPES_BLOCK.GET_USERS_BLOCK:
-            return {
-                ...state,
-                blockedUsers: action.payload.blockedUsers || [],
-                loading: false,
-            };
+            case USER_TYPES_BLOCK.GET_USERS_BLOCK:
+                return {
+                  ...state,
+                  blockedUsers: action.payload,
+                };
 
         default:
             return state;

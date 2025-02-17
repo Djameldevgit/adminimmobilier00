@@ -31,7 +31,7 @@ import { getUsers } from './redux/actions/userAction'
 import { getBlockedUsers } from './redux/actions/userBlockAction'
  
 import Searchusers from './pages/administracion/searchusers'
-import Bloquearusuarios from './pages/administracion/bloquearusuarios'
+ 
 import Listausuariosbloqueados from './pages/administracion/listausuariosbloqueados'
 import Roles from './pages/administracion/roles'
 import Homepostspendientes from './pages/administracion/homepostspendientes'
@@ -97,7 +97,7 @@ function App() {
 
           <Route exact path="/administracion/homepostspendientes" component={auth.token ?Homepostspendientes   : Login} />
           <Route exact path="/administracion/searchusers" component={auth.token ? Searchusers : Login} />
-          <Route exact path="/administracion/bloquearusuarios" component={auth.token ? Bloquearusuarios : Login} />
+ 
           <Route exact path="/administracion/listausuariosbloqueados" component={auth.token ? Listausuariosbloqueados: Login} />
           <Route exact path="/administracion/roles" component={auth.token ? Roles: Login} />
 

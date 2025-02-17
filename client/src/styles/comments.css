@@ -11,7 +11,7 @@
     outline: none;
     flex: 1;
     padding: 10px 15px; /* Espaciado interno */
-    border-radius: 25px; /* Bordes redondeados */
+    border-radius: 10px; /* Bordes redondeados */
     font-size: 14px;
     color: #333;
     transition: background 0.3s ease; /* Transición suave */
@@ -24,11 +24,11 @@
 .comment_input .postBtn {
     border: none;
     outline: none;
-    background: #007bff; /* Azul moderno */
+    background: #ff5e00; /* Azul moderno */
     color: white; /* Texto blanco */
     font-weight: 600;
-    padding: 10px 20px; /* Espaciado interno */
-    border-radius: 25px; /* Bordes redondeados */
+    padding: 5px 10px; /* Espaciado interno */
+    border-radius: 10px; /* Bordes redondeados */
     cursor: pointer;
     transition: background 0.3s ease; /* Transición suave */
 }

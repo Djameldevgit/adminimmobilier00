@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({
+ 
+ 
   category: {
     type: String,
 
@@ -68,7 +70,14 @@ title: {
     type: String,
 
   },
+  comentarios: {
+    type: Boolean,
 
+  },
+  comentarios: {
+    type: Boolean,
+
+  },
   attributes: {
     type: Object, // Cambiar Map por Object
     default: {}   // Establecer un valor predeterminado

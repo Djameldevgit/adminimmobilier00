@@ -8,8 +8,8 @@ import Select from 'react-select';
 import communesjson from "../json/communes.json"
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';  // Importar los estilos predeterminados
-import {updatePost } from '../redux/actions/postAction';
-import { crearPostPendiente } from '../redux/actions/postAproveAction';
+ 
+import { crearPostPendiente ,updatePost} from '../redux/actions/postAproveAction';
  
 const StatusModal = () => {
     const { auth, theme, socket, status, } = useSelector((state) => state);
@@ -113,59 +113,68 @@ const StatusModal = () => {
 
 
     const handleChangeSpecifications = (selectedOptions) => {
-        // Verifica si `selectedOptions` es un array
-        const selectedValues = Array.isArray(selectedOptions)
-            ? selectedOptions.map(option => option.value)  // Si es array, mapea los valores
-            : [selectedOptions.value];  // Si es un solo objeto, convierte a array
-
-        setPostData({ ...postData, specifications: selectedValues });
+        setPostData(prevState => ({
+            ...prevState,
+            attributes: {
+                ...prevState.attributes,
+                specifications: selectedOptions ? selectedOptions.map(option => option.value) : []
+            }
+        }));
     };
-    const handleChangeSelectconditiondepeyement = (selectedOptions) => {
-        // Verifica si `selectedOptions` es un array
-        const selectedValues = Array.isArray(selectedOptions)
-            ? selectedOptions.map(option => option.value)  // Si es array, mapea los valores
-            : [selectedOptions.value];  // Si es un solo objeto, convierte a array
-
-        setPostData({ ...postData, conditiondepeyement: selectedValues });
-    };
+    
     const handleChangeSelectpapiers = (selectedOptions) => {
-        // Verifica si `selectedOptions` es un array
-        const selectedValues = Array.isArray(selectedOptions)
-            ? selectedOptions.map(option => option.value)  // Si es array, mapea los valores
-            : [selectedOptions.value];  // Si es un solo objeto, convierte a array
-
-        setPostData({ ...postData, papiers: selectedValues });
+        setPostData(prevState => ({
+            ...prevState,
+            attributes: {
+                ...prevState.attributes,
+                papiers: selectedOptions ? selectedOptions.map(option => option.value) : []
+            }
+        }));
     };
+    
 
-
-    const handleChangeInput = (e, customValue = null) => {
-        let name, updatedValue;
-
-        if (typeof e === "string") {
-            // Caso especial para el Slider (Range)
-            name = e; // e es el nombre (ej: 'price')
-            updatedValue = customValue;
-        } else {
-            // Caso general para inputs
-            const { name: inputName, value, type, checked } = e.target;
-            name = inputName;
-            updatedValue = customValue !== null ? customValue : (type === 'checkbox' ? checked : value);
-        }
-
-        if (name.startsWith("postData.")) {
-            const attributeName = name.split(".")[1];
-            setPostData((prevState) => ({
-                ...prevState,
-                postData: {
-                    ...prevState.postData,
-                    [attributeName]: updatedValue,
-                },
-            }));
-        } else {
-            setPostData((prevState) => ({ ...prevState, [name]: updatedValue }));
-        }
+    const handleChangeSelectconditiondepeyement = (selectedOptions) => {
+        setPostData(prevState => ({
+            ...prevState,
+            attributes: {
+                ...prevState.attributes,
+                conditiondepeyement: selectedOptions ? selectedOptions.map(option => option.value) : []
+            }
+        }));
     };
+    
+    
 
+
+    const handleChangeInput = (e) => {
+        const { name, value, type, checked } = e.target;
+    
+        setPostData(prevState => {
+            const isCheckbox = type === "checkbox";
+            
+            // Verificamos si el name pertenece a attributes
+            const isAttribute = prevState.attributes && Object.prototype.hasOwnProperty.call(prevState.attributes, name);
+    
+            if (isAttribute) {
+                // Si el campo pertenece a attributes, actualizamos dentro de attributes
+                return {
+                    ...prevState,
+                    attributes: {
+                        ...prevState.attributes,
+                        [name]: isCheckbox ? checked : value
+                    }
+                };
+            } else {
+                // Si es un campo normal, lo actualizamos directamente
+                return {
+                    ...prevState,
+                    [name]: isCheckbox ? checked : value
+                };
+            }
+        });
+    };
+    
+    
 
 
 
@@ -227,31 +236,82 @@ const StatusModal = () => {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-
-
-
+        
+        console.log(postData); // Verifica el contenido de postData antes de enviarlo
+        
         if (images.length === 0) {
             return dispatch({
                 type: GLOBALTYPES.ALERT,
                 payload: { error: "Por favor agrega una foto o video." },
             });
         }
-
+   
         if (status.onEdit) {
             dispatch(updatePost({ postData, images, auth, status }));
         } else {
-
             dispatch(crearPostPendiente({ postData, images, auth, socket }));
- 
         }
-
-        // Resetear estado
+   
         setPostData(initilastate);
         setImages([]);
         if (tracks) tracks.stop();
         dispatch({ type: GLOBALTYPES.STATUS, payload: false });
-        
     };
+   
+/*
+    useEffect(() => {
+        console.log("status en useEffect:", status);
+        if (status?.onEdit) {
+            setPostData({
+                subCategory: status.subCategory || "",
+                title: status.title || "",
+                description: status.description || "",
+                price: status.price || "",
+                unidaddeprecio: status.unidaddeprecio || "",
+                oferta: status.oferta || "",
+                change: status.change || "",
+                wilaya: status.wilaya || "",
+                commune: status.commune || "",
+                quartier: status.quartier || "",
+                email: status.email || "",
+                telefono: status.telefono || "",
+                contadordevisitas: status.contadordevisitas || "",
+                informacion: status.informacion || "",
+                comentarios: status.comentarios || "",
+                attributes: {
+                    superficie: status.attributes?.attributes.superficie || "",
+                    etage: status.attributes?.attributes.etage || "",
+                    piece: status.attributes?.attributes.piece || "",
+                    promoteurimmobilier: status.attributes?.attributes.promoteurimmobilier || "",
+                    parlepromoteurimmobilier: status.attributes?.attributes.parlepromoteurimmobilier || "",
+                    conditiondepeyement: status.attributes?.attributes.conditiondepeyementt || "",
+                    specifications: status.attributes?.attributes.specifications || "",
+                    papiers: status.attributes?.papiers || "",
+                },
+            });
+            setImages(status.images || []);
+        }
+    }, [status]);
+
+ 
+
+
+    /*const handleChangeInput = (e) => {
+        const { name, value } = e.target;
+
+        if (name.startsWith("attributes.")) {
+            const key = name.split(".")[1];
+            setPostData((prev) => ({
+                ...prev,
+                attributes: {
+                    ...prev.attributes,
+                    [key]: value,
+                },
+            }));
+        } else {
+            setPostData((prev) => ({ ...prev, [name]: value }));
+        }
+    };*/
 
     useEffect(() => {
         console.log("status en useEffect:", status);
@@ -276,18 +336,18 @@ const StatusModal = () => {
                     superficie: status.attributes?.superficie || "",
                     etage: status.attributes?.etage || "",
                     piece: status.attributes?.piece || "",
-                    promoteurimmobilier: status.attributes?.promoteurimmobilier || "",
-                    parlepromoteurimmobilier: status.attributes?.parlepromoteurimmobilier || "",
-                    conditiondepeyement: status.attributes?.conditiondepeyement || "",
-                    specifications: status.attributes?.specifications || "",
-                    papiers: status.attributes?.papiers || "",
+                    promoteurimmobilier: status.attributes?.promoteurimmobilier || false,
+                    parlepromoteurimmobilier: status.attributes?.parlepromoteurimmobilier || false,
+                    conditiondepeyement: status.attributes?.conditiondepeyement || [],
+                    specifications: status.attributes?.specifications || [],
+                    papiers: status.attributes?.papiers || [],
                 },
             });
             setImages(status.images || []);
         }
     }, [status]);
-
-
+    
+ 
 
 
     /*const handleChangeInput = (e) => {
@@ -306,8 +366,6 @@ const StatusModal = () => {
             setPostData((prev) => ({ ...prev, [name]: value }));
         }
     };*/
-
-
     return (
         <div className='status_modal'  >
             <form onSubmit={handleSubmit}>
@@ -384,7 +442,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -394,7 +452,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -405,7 +463,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -417,7 +475,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="promoteurimmobilier"
-                                        checked={postData.promoteurimmobilier}
+                                        checked={postData.attributes.promoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Promotion immobilière"
                                     />
@@ -427,7 +485,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="parlepromoteurimmobilier"
-                                        checked={postData.parlepromoteurimmobilier}
+                                        checked={postData.attributes.parlepromoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Parle du promoteur immobilier"
                                     />
@@ -438,7 +496,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -447,7 +505,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -457,7 +515,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -477,7 +535,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -489,7 +547,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -499,7 +557,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -509,7 +567,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -529,7 +587,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -539,7 +597,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -550,7 +608,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -562,7 +620,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="promoteurimmobilier"
-                                        checked={postData.promoteurimmobilier}
+                                        checked={postData.attributes.promoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Promotion immobilière"
                                     />
@@ -572,7 +630,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="parlepromoteurimmobilier"
-                                        checked={postData.parlepromoteurimmobilier}
+                                        checked={postData.attributes.parlepromoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Parle du promoteur immobilier"
                                     />
@@ -583,7 +641,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -593,7 +651,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -603,7 +661,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -622,7 +680,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -632,7 +690,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -643,7 +701,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -655,7 +713,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="promoteurimmobilier"
-                                        checked={postData.promoteurimmobilier}
+                                        checked={postData.attributes.promoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Promotion immobilière"
                                     />
@@ -665,7 +723,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="parlepromoteurimmobilier"
-                                        checked={postData.parlepromoteurimmobilier}
+                                        checked={postData.attributes.parlepromoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Parle du promoteur immobilier"
                                     />
@@ -676,7 +734,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -686,7 +744,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -696,7 +754,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -714,7 +772,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -724,7 +782,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -737,7 +795,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -747,7 +805,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -757,7 +815,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -775,7 +833,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -785,7 +843,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -796,7 +854,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -809,7 +867,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -819,7 +877,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -829,7 +887,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -847,7 +905,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -859,7 +917,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -869,7 +927,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -879,7 +937,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -896,7 +954,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -906,7 +964,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -920,7 +978,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -930,7 +988,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -940,7 +998,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -958,7 +1016,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -970,7 +1028,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -982,7 +1040,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="promoteurimmobilier"
-                                        checked={postData.promoteurimmobilier}
+                                        checked={postData.attributes.promoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Promotion immobilière"
                                     />
@@ -992,7 +1050,7 @@ const StatusModal = () => {
                                     <FormCheck
                                         type="checkbox"
                                         name="parlepromoteurimmobilier"
-                                        checked={postData.parlepromoteurimmobilier}
+                                        checked={postData.attributes.parlepromoteurimmobilier}
                                         onChange={handleChangeInput}
                                         label="Parle du promoteur immobilier"
                                     />
@@ -1003,7 +1061,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -1013,7 +1071,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -1023,7 +1081,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -1041,7 +1099,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="superficie"
-                                        value={postData.superficie}
+                                        value={postData.attributes.superficie}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Superficie en M²"
@@ -1051,7 +1109,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="etage"
-                                        value={postData.etage}
+                                        value={postData.attributes.etage}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Etage(s)"
@@ -1063,7 +1121,7 @@ const StatusModal = () => {
                                         <FormCheck
                                             type="checkbox"
                                             name="promoteurimmobilier"
-                                            checked={postData.promoteurimmobilier}
+                                            checked={postData.attributes.promoteurimmobilier}
                                             onChange={handleChangeInput}
                                             label="Promotion immobilière"
                                         />
@@ -1073,7 +1131,7 @@ const StatusModal = () => {
                                         <FormCheck
                                             type="checkbox"
                                             name="parlepromoteurimmobilier"
-                                            checked={postData.parlepromoteurimmobilier}
+                                            checked={postData.attributes.parlepromoteurimmobilier}
                                             onChange={handleChangeInput}
                                             label="Parle du promoteur immobilier"
                                         />
@@ -1092,7 +1150,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -1102,7 +1160,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="etage"
-                                    value={postData.etage}
+                                    value={postData.attributes.etage}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Etage(s)"
@@ -1115,7 +1173,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -1125,7 +1183,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -1135,7 +1193,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -1153,7 +1211,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -1166,7 +1224,7 @@ const StatusModal = () => {
                                     <input
                                         type="number"
                                         name="piece"
-                                        value={postData.piece}
+                                        value={postData.attributes.piece}
                                         onChange={handleChangeInput}
                                         className="form-control"
                                         placeholder="Pièces"
@@ -1179,7 +1237,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -1189,7 +1247,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -1199,7 +1257,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -1215,7 +1273,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -1227,7 +1285,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -1237,7 +1295,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -1247,7 +1305,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -1263,7 +1321,7 @@ const StatusModal = () => {
                                 <input
                                     type="number"
                                     name="superficie"
-                                    value={postData.superficie}
+                                    value={postData.attributes.superficie}
                                     onChange={handleChangeInput}
                                     className="form-control"
                                     placeholder="Superficie en M²"
@@ -1276,7 +1334,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.conditiondepeyemen && postData.conditiondepeyemen.includes(obj.value))}
+                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
                                         options={conditiondepeyement}
                                         onChange={handleChangeSelectconditiondepeyement}
                                         isMulti={true}
@@ -1286,7 +1344,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.specifications && postData.specifications.includes(obj.value))}
+                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
                                         options={specifications}
                                         onChange={handleChangeSpecifications}
                                         isMulti={true}
@@ -1296,7 +1354,7 @@ const StatusModal = () => {
                                 <div className="form-group">
                                     <Select
                                         placeholder="paiers"
-                                        value={papiers.filter(obj => postData.papiers && postData.papiers.includes(obj.value))}
+                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
                                         options={papiers}
                                         onChange={handleChangeSelectpapiers}
                                         isMulti={true}
@@ -1317,31 +1375,36 @@ const StatusModal = () => {
                         />
                     </div>
                     <div className="card-body form-group">
-                        <label className="text-primary">Prix  </label>
-                        <div style={{ padding: '0 20px' }}>
-                            <Slider
-                                min={500}
-                                max={2000000}
-                                step={500}
-                                value={postData.price || 0} // Si no hay precio, el slider empieza en 0
-                                onChange={(value) => handleChangeInput("price", value)} // Ahora pasamos solo el nombre y valor correctamente
-                                trackStyle={{ backgroundColor: '#44EB00', height: 10 }}
-                                handleStyle={{
-                                    borderColor: '#00AF72',
-                                    height: 20,
-                                    width: 20,
-                                    marginLeft: -10,
-                                    marginTop: -5,
-                                    backgroundColor: '#007bff',
-                                }}
-                                railStyle={{ backgroundColor: '#ccc', height: 10 }}
-                            />
+    <label className="text-primary">Prix</label>
+    <div style={{ padding: '0 20px' }}>
+        <Slider
+            min={500}
+            max={2000000}
+            step={500}
+            value={postData.price || 0} // Si no hay precio, el slider empieza en 0
+            onChange={(value) => {
+                setPostData(prevState => ({
+                    ...prevState,
+                    price: value // Solo actualizamos el valor de 'price'
+                }));
+            }} 
+            trackStyle={{ backgroundColor: '#44EB00', height: 10 }}
+            handleStyle={{
+                borderColor: '#00AF72',
+                height: 20,
+                width: 20,
+                marginLeft: -10,
+                marginTop: -5,
+                backgroundColor: '#007bff',
+            }}
+            railStyle={{ backgroundColor: '#ccc', height: 10 }}
+        />
+    </div>
 
-                        </div>
-                        <div style={{ marginTop: 10 }}>
-                            {postData.price}
-                        </div>
-                    </div>
+    <div style={{ marginTop: 10 }}>
+        {postData.price}
+    </div>
+</div>
 
                     <div className="form-group">
 

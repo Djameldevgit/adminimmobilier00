@@ -1,42 +1,51 @@
 import React, { useState } from "react";
- 
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { bloquearUsuario } from "../../redux/actions/userBlockAction";
 
-const BloquearUsuarios = ({ setOpenModalBloqueo,  user }) => {
-  const { auth } = useSelector(state => state)
-  const dispatch = useDispatch()
+const BloquearUsuarios = ({ setOpenModalBloqueo, user }) => {
+  const dispatch = useDispatch();
 
   const [datosBloqueo, setDatosBloqueo] = useState({
     motivo: "",
-    contetn:"",
-    fechaBloqueo:"",
-    fechaLimite: "", // Nueva fecha de límite para el bloqueo
-
+    content: "",
+    fechaBloqueo: "",
+    fechaLimite: "",
   });
-
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setDatosBloqueo({ ...datosBloqueo, [name]: value });
   };
 
-  const handleBloqueo = (e) => {
+  const handleBlocage = (e) => {
     e.preventDefault();
-    dispatch(bloquearUsuario({ auth, datosBloqueo, user })); // ✅ Solo enviamos `motivo` y `fechaLimite`
+    dispatch(bloquearUsuario({ datosBloqueo, user }));
+    setOpenModalBloqueo(false); // Cierra el modal después de bloquear
+  };
+
+  const handleClose = () => {
+    setOpenModalBloqueo(false); // Cierra el modal sin hacer nada
   };
 
   return (
-  <div className="container-modal-bloqueo">
-        <div className="modal-content-bloqueo">
-          <div className="modal-header-bloqueo">
-            <h5 className="modal-title-bloqueo">Confirmar bloqueo</h5>
-            <button className="btn btn-danger btn_close"
-            onClick={() => setOpenModalBloqueo(false)}>
-                Close
-            </button>
+    <div className="container-modal-bloqueo">
+      <div className="modal-content-bloqueo">
+        <div className="modal-header-bloqueo">
+          <h5 className="modal-title-bloqueo">Confirmar bloqueo</h5>
+          <div>
+            <span className="text-warning">
+              Estás a punto de bloquear a "{user.username}"
+            </span>
           </div>
-          <form onSubmit={handleBloqueo}>
+          <button
+            className="btn btn-danger btn_close"
+            onClick={handleClose}
+            style={{ position: "absolute", top: "10px", right: "10px", fontSize: "20px" }}
+          >
+            ×
+          </button>
+        </div>
+        <form onSubmit={handleBlocage}>
           <div className="modal-body-bloqueo">
             {/* Select para el motivo */}
             <div className="form-group">
@@ -87,7 +96,7 @@ const BloquearUsuarios = ({ setOpenModalBloqueo,  user }) => {
               />
             </div>
 
-            
+            {/* Fecha límite del bloqueo */}
             <div className="form-group">
               <label>Fecha límite del bloqueo</label>
               <input
@@ -105,8 +114,8 @@ const BloquearUsuarios = ({ setOpenModalBloqueo,  user }) => {
             </button>
           </div>
         </form>
-        </div>
-     </div>
+      </div>
+    </div>
   );
 };
 

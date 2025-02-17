@@ -21,7 +21,7 @@ import languageReducer from './languageReducer';
 import homePostsAprove from './posAprovetReducer'
 import homeUsers from './userReducer'
 import userBlockReducer from './userBlcokReducer'
-import roleeReducer from './roleeReducer'
+import roleReducer from './roleeReducer'
 
 export default combineReducers({
     auth,
@@ -40,5 +40,5 @@ export default combineReducers({
     online,
     call,
     peer,
-    languageReducer,homePostsAprove,homeUsers,userBlockReducer, roleeReducer
+    languageReducer,homePostsAprove,homeUsers,userBlockReducer, roleReducer
 })

@@ -1,5 +1,5 @@
 import React from 'react';
- 
+
 const DescriptionAttributePost = ({ post }) => {
     return (
         <div className="description-container">
@@ -9,15 +9,25 @@ const DescriptionAttributePost = ({ post }) => {
                     Object.entries(post.attributes).map(([key, value]) => (
                         <li key={key} className="attribute-item">
                             <span className="attribute-key">{key}:</span>
-                            <span className="attribute-value">{value}</span>
+                            <span className="attribute-value">
+                                {Array.isArray(value)
+                                    ? value.join(', ') // Agregar comas entre los valores del array
+                                    : typeof value === "boolean"
+                                        ? (value ? "Oui" : "Non")
+                                        : value
+                                }
+                            </span>
                         </li>
                     ))
                 ) : (
                     <li className="attribute-item">No hay atributos disponibles</li>
                 )}
             </ul>
+
+           
         </div>
     );
 };
 
 export default DescriptionAttributePost;
+

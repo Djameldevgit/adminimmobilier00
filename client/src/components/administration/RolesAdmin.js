@@ -1,18 +1,19 @@
 import { useSelector, useDispatch } from 'react-redux';
 import UserCard from '../UserCard';
 import { roleuserautenticado, rolemoderador, rolesuperuser, roleadmin } from '../../redux/actions/roleAction';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 
-const RolesAdmin = ({ setOpenModalRoles }) => {
+const RolesAdmin = () => {
   const { homeUsers, auth } = useSelector(state => state);
   const dispatch = useDispatch();
-
-  // Estado para almacenar los roles seleccionados
   const [selectedRoles, setSelectedRoles] = useState({});
-
-  const handleRoleChange = (userId, role) => {
-    setSelectedRoles(prev => ({ ...prev, [userId]: role }));
-  };
+  useEffect(() => {
+    if (homeUsers?.users) {
+      setUsersList(homeUsers.users);
+    }
+  }, [homeUsers]);
+  // Estado para almacenar los roles seleccionados
+ 
 
   const handleChangeRole = async (user, selectedRole) => {
     switch (selectedRole) {
@@ -33,67 +34,60 @@ const RolesAdmin = ({ setOpenModalRoles }) => {
     }
   };
 
-  const handleSubmitRoleChange = (user) => {
-    const selectedRole = selectedRoles[user._id];
-    if (selectedRole) {
-      handleChangeRole(user, selectedRole);
-    }
-  };
+  // Cambio de rol inmediato
+  const [usersList, setUsersList] = useState(homeUsers?.users || []);
 
+
+  const handleRoleChange = async (user, selectedRole) => {
+    setSelectedRoles(prev => ({ ...prev, [user._id]: selectedRole }));
+    await handleChangeRole(user, selectedRole);
+  
+    // Actualiza la lista local de usuarios con el nuevo rol
+    setUsersList(prevUsers =>
+      prevUsers.map(u => (u._id === user._id ? { ...u, role: selectedRole } : u))
+    );
+  };
+  
   return (
- 
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Asignar roles</h5>
-           
-          </div>
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Usuario</th>
-                  <th>Rol Actual</th>
-                  <th>Cambiar Rol</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {homeUsers.users.map((user) => (
-                  user._id !== auth.user._id && user.role !== 'admin' && (
-                    <tr key={user._id}>
-                      <td>
-                        <UserCard user={user} />
-                      </td>
-                      <td>{user.role}</td>
-                      <td>
-                        <select
-                          className='form-control'
-                          onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                          value={selectedRoles[user._id] || user.role}
-                        >
-                          <option value='user'>Utilisateur authentifié</option>
-                          <option value='Super-utilisateur'>Super utilisateur</option>
-                          <option value='Moderateur'>Moderateur</option>
-                          <option value='admin'>admin</option>
-                        </select>
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleSubmitRoleChange(user)}
-                        >
-                          Asignar Rol
-                          
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-    
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title">Asignar roles</h5>
+      </div>
+      <div className="table-responsive">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Rol Actual</th>
+              <th>Cambiar Rol</th>
+            </tr>
+          </thead>
+          <tbody>
+  {usersList.map((user, index) => (
+    <tr key={user._id || index}>
+      <td>
+        <UserCard user={user} />
+      </td>
+      <td>{user.role}</td>
+      <td>
+        <select
+          className="form-control"
+          onChange={(e) => handleRoleChange(user, e.target.value)}
+          value={selectedRoles[user._id] || user.role}
+        >
+          <option value="user">Utilisateur authentifié</option>
+          <option value="Super-utilisateur">Super utilisateur</option>
+          <option value="Moderateur">Moderateur</option>
+          <option value="admin">Admin</option>
+        </select>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+        </table>
+      </div>
+    </div>
   );
 };
 

@@ -9,7 +9,7 @@ export const ROLES_TYPES = {
 
 
 }
- 
+
 
 export const roleuserautenticado = (user, auth) => async (dispatch) => {
   try {
@@ -20,7 +20,7 @@ export const roleuserautenticado = (user, auth) => async (dispatch) => {
       payload: { user, res: res.data }
     });
 
-    dispatch({ type: ROLES_TYPES.LOADING, payload: false})
+    dispatch({ type: ROLES_TYPES.LOADING, payload: false })
     dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } })
   } catch (err) {
     dispatch({
@@ -30,23 +30,26 @@ export const roleuserautenticado = (user, auth) => async (dispatch) => {
   }
 };
 
+// Ejemplo de acción para actualizar el rol a "superuser"
 export const rolesuperuser = (user, auth) => async (dispatch) => {
   try {
-    dispatch({ type: ROLES_TYPES.LOADING, payload: true })
-    const res = await patchDataAPI(`user/${user._id}/rolesuperuser`, { role: 'superuser' }, auth.token);
+    dispatch({ type: ROLES_TYPES.LOADING, payload: true });
 
+    const res = await patchDataAPI(`user/${user._id}/rolesuperuser`, { role: 'superuser' }, auth.token);
 
     dispatch({
       type: ROLES_TYPES.SUPERUSER_ROLE,
-      payload: { user, res: res.data }
+      payload: { user: { ...user, role: 'superuser' } } // Se envía el usuario con el rol actualizado
     });
-    dispatch({ type: ROLES_TYPES.LOADING, payload: false})
-    dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } })
+
+    dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
+    dispatch({ type: ROLES_TYPES.LOADING, payload: false });
   } catch (err) {
     dispatch({
       type: GLOBALTYPES.ALERT,
-      payload: { error: err.response.data.msg }
+      payload: { error: err.response.data.msg },
     });
+    dispatch({ type: ROLES_TYPES.LOADING, payload: false });
   }
 };
 
@@ -59,7 +62,7 @@ export const rolemoderador = (user, auth) => async (dispatch) => {
       type: ROLES_TYPES.MODERADOR_ROLE,
       payload: { user, res: res.data }
     });
-    dispatch({ type: ROLES_TYPES.LOADING, payload: false})
+    dispatch({ type: ROLES_TYPES.LOADING, payload: false })
     dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } })
   } catch (err) {
     dispatch({
@@ -77,7 +80,7 @@ export const roleadmin = (user, auth) => async (dispatch) => {
       type: ROLES_TYPES.ADMIN_ROLE,
       payload: { user, res: res.data }
     });
-    dispatch({ type: ROLES_TYPES.LOADING, payload: false})
+    dispatch({ type: ROLES_TYPES.LOADING, payload: false })
     dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } })
   } catch (err) {
     dispatch({

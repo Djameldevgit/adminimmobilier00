@@ -1,26 +1,26 @@
- /* Estilos base */
 .description-container {
     width: 100%;
-    max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
-    margin: 0 auto; /* Centra el contenedor */
+    max-width: 1200px; /* Limita el ancho máximo */
+    margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
-    background-color: #f9f9f9; /* Fondo claro */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .description-title {
     font-size: 24px;
     font-weight: bold;
-    color: #333; /* Color de texto oscuro */
+    color: #333;
     margin-bottom: 20px;
     text-align: center;
+    text-transform: uppercase; /* Mayúsculas para más impacto */
+    letter-spacing: 1px; /* Espaciado */
 }
 
 .attributes-list {
-    list-style: none; /* Elimina los puntos de la lista */
+    list-style: none;
     padding: 0;
     margin: 0;
 }
@@ -28,52 +28,37 @@
 .attribute-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid #ddd; /* Línea divisoria entre elementos */
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
     font-size: 16px;
-    color: #555; /* Color de texto gris */
+    color: #555;
+    transition: background 0.3s ease;
 }
 
-.attribute-item:last-child {
-    border-bottom: none; /* Elimina la línea del último elemento */
+.attribute-item:hover {
+    background: #eef7ff; /* Efecto hover */
 }
 
 .attribute-key {
     font-weight: bold;
-    color: #4c93af; /* Color azul para las claves */
+    color: #0077b6;
+    text-transform: capitalize; /* Primera letra en mayúscula */
 }
 
 .attribute-value {
-    color: #333; /* Color oscuro para los valores */
+    color: #333;
+    font-style: italic; /* Estilo diferenciado */
 }
 
-/* Estilos responsivos */
+/* Responsive */
 @media (max-width: 768px) {
-    .description-container {
-        padding: 15px;
-    }
-
     .description-title {
         font-size: 20px;
     }
 
     .attribute-item {
-        flex-direction: column; /* Cambia a disposición vertical en pantallas pequeñas */
+        flex-direction: column;
         align-items: flex-start;
-        padding: 8px;
-    }
-
-    .attribute-key {
-        margin-bottom: 5px; /* Espacio entre clave y valor en móviles */
-    }
-}
-
-@media (max-width: 480px) {
-    .description-title {
-        font-size: 18px;
-    }
-
-    .attribute-item {
-        font-size: 14px;
+        padding: 10px;
     }
 }

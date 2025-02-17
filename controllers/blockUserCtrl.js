@@ -1,6 +1,19 @@
 const Users = require('../models/userModel');
 const BlockUser = require('../models/blockModel'); // Importar modelo de bloqueos
+class APIfeatures {
+    constructor(query, queryString) {
+        this.query = query;
+        this.queryString = queryString;
+    }
 
+    paginating() {
+        const page = this.queryString.page * 1 || 1
+        const limit = this.queryString.limit * 1 || 9
+        const skip = (page - 1) * limit
+        this.query = this.query.skip(skip).limit(limit)
+        return this;
+    }
+}
 const userCtrl = {
     /*
         blockUser: async (req, res) => {
@@ -40,7 +53,7 @@ const userCtrl = {
         },*/
     blockUser: async (req, res) => {
         try {
-            const { motivo,fechaBloqueo,  fechaLimite } = req.body;//
+            const { motivo, content, fechaBloqueo, fechaLimite } = req.body;//
 
             console.log(req.body)
             const user = await Users.findById(req.params.id);
@@ -54,7 +67,8 @@ const userCtrl = {
             const blockedUser = new BlockUser({
                 user: req.params.id,
                 motivo: motivo || "Sin especificar",
-               fechaBloqueo: fechaBloqueo ? new Date(fechaBloqueo) : new Date(), // Si no se envía, usa la fecha actual
+                content: content || "Sin especificar",
+                fechaBloqueo: fechaBloqueo ? new Date(fechaBloqueo) : new Date(), // Si no se envía, usa la fecha actual
                 fechaLimite: fechaLimite,
                 esBloqueado: true
             });
@@ -99,10 +113,20 @@ const userCtrl = {
 
     // 🔍 Obtener todos los usuarios bloqueados
     getBlockedUsers: async (req, res) => {
+        
         try {
-            const blockedUsers = await BlockUser.find().populate('user', 'username email'); // Pobla el campo 'user'
+            const features = new APIfeatures(BlockUser.find(), req.query).paginating()
+            const  blockedUsers = await features.query.sort('-createdAt')
+            .populate('user', 'username email')
+           
 
-            return res.json({ success: true, blockedUsers });
+            return res.json({
+                success: true,
+
+                result: blockedUsers.length,
+
+                blockedUsers
+            });
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }

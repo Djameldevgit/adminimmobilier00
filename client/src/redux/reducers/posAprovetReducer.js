@@ -1,5 +1,5 @@
 import { POST_TYPES_APROVE } from '../actions/postAproveAction';
- 
+import { EditData  } from '../actions/globalTypes'
 const initialState = {
     posts: [],
     loading: false,
@@ -38,7 +38,11 @@ const postAproveReducer = (state = initialState, action) => {
                 page: action.payload.page
             };
 
-
+            case POST_TYPES_APROVE.UPDATE_POST:
+                return {
+                    ...state,
+                    posts: EditData(state.posts, action.payload._id, action.payload)
+                };
         default:
             return state;
     }
