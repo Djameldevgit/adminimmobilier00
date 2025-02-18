@@ -6,11 +6,11 @@ router.post('/posts', auth,postCtrl.crearPostPendiente)
 router.get('/posts/pendientes', auth,postCtrl.getPostsPendientes)
 router.patch('/aprovarpost/:id/aprovado', auth, postCtrl.aprobarPostPendiente);
 
-router.get('/posts', auth,postCtrl.getPosts)
+router.get('/posts',   postCtrl.getPosts)
 
 router.route('/post/:id')
     .patch(auth, postCtrl.updatePost)
-    .get(auth, postCtrl.getPost)
+    .get(  postCtrl.getPost)
     .delete(auth, postCtrl.deletePost)
 
 router.patch('/post/:id/like', auth, postCtrl.likePost)

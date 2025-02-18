@@ -217,25 +217,24 @@ const postCtrl = {
     getPost: async (req, res) => {
         try {
             const post = await Posts.findById(req.params.id)
-                .populate("user likes", "avatar username followers")
+                .populate("user", "avatar username") // ❌ Eliminamos `followers`
                 .populate({
                     path: "comments",
                     populate: {
-                        path: "user likes",
-                        select: "-password"
+                        path: "user",
+                        select: "avatar username" // ❌ Eliminamos `likes` y `-password`
                     }
-                })
-
-            if (!post) return res.status(400).json({ msg: 'This post does not exist.' })
-
-            res.json({
-                post
-            })
-
+                });
+    
+            if (!post) return res.status(404).json({ msg: 'This post does not exist.' });
+    
+            res.json({ post });
+    
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({ msg: err.message });
         }
     },
+    
     getPostsDicover: async (req, res) => {
         try {
 

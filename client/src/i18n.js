@@ -6,6 +6,11 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   resources: {
     en: {
       translation: {
+        //USER MESSAGE MODAL AUTETICACION
+        "You must register to be able to like":"You must register to be able to like",
+        "Please log in or register to continue.":  "Please log in or register to continue." ,
+           "close":  "Close" ,
+
         //COMMENT
         "readMore": "Read more",
         "likes": "Likes",
@@ -84,6 +89,13 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
 
     fr: {
       translation: {
+ //USER MESSAGE MODAL AUTETICACION
+ "You must register to be able to like":"Vous devez vous inscrire pour pouvoir aimer",
+ "Please log in or register to continue.":  "Veuillez vous connecter ou vous inscrire pour continuer" ,
+           "close":  "Fermer" ,
+
+
+
         //COMMENTS
         "readMore": "Lire plus",
         "likes": "Mentions j'aime",
@@ -152,6 +164,11 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
     },
     ar: {
       translation: {
+
+//USER MESSAGE MODAL AUTETICACION
+"You must register to be able to like":"يجب عليك التسجيل لتتمكن من الإعجاب",
+"Please log in or register to continue.":  "الرجاء تسجيل الدخول أو التسجيل للمتابعة." ,
+"close":  "غلق" ,
         //COMMENTS 
         "readMore": "اقرأ المزيد",
         "likes": "إعجابات",

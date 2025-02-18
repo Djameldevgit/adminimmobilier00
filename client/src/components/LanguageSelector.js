@@ -41,7 +41,7 @@ function LanguageSelector() {
   }, [cookies.language, handleLanguageChange]);
 
   return (
-    <div className='language-component'>
+    <div className='language'>
     <Link to="/" className="dropdown-item" onClick={() => handleLanguageChange('ar')}>
       {t('Arabe', { lng: languageReducer.language })}
     </Link>

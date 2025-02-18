@@ -60,40 +60,57 @@ const Menu = () => {
                 </li>
 
 
-                <li className="nav-item dropdown" style={{ opacity: 1 }} >
-                    <span className="nav-link dropdown-toggle" id="navbarDropdown"
-                        role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <Avatar src={auth.user.avatar} size="medium-avatar" />
-                    </span>
+                {auth.user ? (
+                    <li className="nav-item dropdown" style={{ opacity: 1 }}>
+                        <span className="nav-link dropdown-toggle" id="navbarDropdown"
+                            role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <Avatar src={auth.user.avatar} size="medium-avatar" />
+                        </span>
 
-                    <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div className='language'>
+                                <LanguageSelector />
+                            </div>
+                            <Link className="dropdown-item" to='/annonces'>Ajoute un annonce</Link>
+                            <Link className="dropdown-item" to='/administracion/roles'>Roles</Link>
+                            <Link className="dropdown-item" to='/administracion/listausuariosbloqueados'>Lista usuarios bloqueados</Link>
+                            <Link className="dropdown-item" to='/administracion/searchusers'>Search users</Link>
+                            <Link className="dropdown-item" to='/administracion/homepostspendientes'>Posts pendientes</Link>
+                            <Link className="dropdown-item" to='/profile'>Profile</Link>
 
-                        <div className='language'>
-                            <LanguageSelector />
+                            <label htmlFor="theme" className="dropdown-item"
+                                onClick={() => dispatch({ type: GLOBALTYPES.THEME, payload: !theme })}>
+                                {theme ? 'Light mode' : 'Dark mode'}
+                            </label>
+
+                            <div className="dropdown-divider"></div>
+                            <Link className="dropdown-item" to="/" onClick={() => dispatch(logout())}>
+                                Logout
+                            </Link>
                         </div>
-                        <Link className="dropdown-item" to='/annonces'> Ajoute un annonce</Link>
-                        <Link className="dropdown-item" to='/administracion/roles'> roles</Link>
-                          <Link className="dropdown-item" to='/administracion/listausuariosbloqueados'> Lista usuarios bloqueados</Link>
-                        <Link className="dropdown-item" to='/administracion/searchusers'> search users</Link>
-                        
-                        <Link className="dropdown-item" to='/administracion/homepostspendientes'>posts pendientes</Link>
-                        <Link className="dropdown-item" to={`/profile/${auth.user._id}`}>Profile</Link>
+                    </li>
+                ) : (
+                    // Si el usuario NO está autenticado, mostrar "Login / Register"
 
-                        <label htmlFor="theme" className="dropdown-item"
-                            onClick={() => dispatch({
-                                type: GLOBALTYPES.THEME, payload: !theme
-                            })}>
 
-                            {theme ? 'Light mode' : 'Dark mode'}
-                        </label>
 
+                    <div className="btn-group user-icon-container">
+                    <i className="fas fa-user user-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+                    <div className="dropdown-menu user-dropdown">
+                    <div className='language'>
+                                <LanguageSelector />
+                            </div>
+
+                      
+                        <Link className="dropdown-item" to={'/login'}>Login</Link>
                         <div className="dropdown-divider"></div>
-                        <Link className="dropdown-item" to="/"
-                            onClick={() => dispatch(logout())}>
-                            Logout
-                        </Link>
+                        <Link className="dropdown-item" to={'/register'}>Register</Link>
                     </div>
-                </li>
+                </div>
+
+
+
+                )}
             </ul>
         </div>
 

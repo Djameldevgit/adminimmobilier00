@@ -1,9 +1,7 @@
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-
-import PageRender from './customRouter/PageRender'
-import PrivateRouter from './customRouter/PrivateRouter'
-
+import { BrowserRouter as Router,Switch,  Redirect,Route } from 'react-router-dom'
+ 
+ 
 import Home from './pages/home'
 import Login from './pages/login'
 import Register from './pages/register'
@@ -14,7 +12,7 @@ import StatusModal from './components/StatusModal'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { refreshToken } from './redux/actions/authAction'
-
+import { getPosts } from './redux/actions/postAction'
 import { getSuggestions } from './redux/actions/suggestionsAction'
 
 import io from 'socket.io-client'
@@ -23,20 +21,10 @@ import SocketClient from './SocketClient'
 
 import { getNotifies } from './redux/actions/notifyAction'
 import CallModal from './components/message/CallModal'
-
-import { getPostsPendientes } from './redux/actions/postAproveAction'
-import { getPosts } from './redux/actions/postAction'
-import { getUsers } from './redux/actions/userAction'
  
-import { getBlockedUsers } from './redux/actions/userBlockAction'
- 
-import Searchusers from './pages/administracion/searchusers'
- 
-import Listausuariosbloqueados from './pages/administracion/listausuariosbloqueados'
-import Roles from './pages/administracion/roles'
-import Homepostspendientes from './pages/administracion/homepostspendientes'
- 
- 
+import NotFound from './components/NotFound'
+import Post from './pages/post'
+import Profile from './pages/profile'
 
 function App() {
   const { auth, status, modal, call } = useSelector(state => state)
@@ -51,65 +39,50 @@ function App() {
   }, [dispatch])
 
   useEffect(() => {
+
     if (auth.token) {
-      dispatch(getUsers(auth.token))
-      dispatch(getBlockedUsers(auth.token))
-      dispatch(getPostsPendientes(auth.token))
-      dispatch(getPosts(auth.token))
       dispatch(getSuggestions(auth.token))
       dispatch(getNotifies(auth.token))
     }
   }, [dispatch, auth.token])
-  /*
-  <Route exact path="/users/lastusers" component={auth.token ? Lastusers : Login} />
-  <Route exact path="/users/searchusers" component={auth.token ? Searchusers : Login} />
-  <Route exact path="/users/activityusers" component={auth.token ? Activityusers : Login} />
-*/
-
   useEffect(() => {
-    if (!("Notification" in window)) {
-      alert("This browser does not support desktop notification");
-    }
-    else if (Notification.permission === "granted") { }
-    else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(function (permission) {
-        if (permission === "granted") { }
-      });
-    }
-  }, [])
+    dispatch(getPosts(auth.token)); // Se enviará null si no hay token
+  }, [dispatch, auth.token]);
 
-
-
-  return (
-    <Router>
-      <Alert />
-
-      <input type="checkbox" id="theme" />
-      <div className={`App ${(status || modal) && 'mode'}`}>
-        <div className="main">
-          {auth.token && <Header />}
-          {status && <StatusModal />}
-          {auth.token && <SocketClient />}
-          {call && <CallModal />}
-
-          <Route exact path="/" component={auth.token ? Home : Login} />
-          <Route exact path="/register" component={Register} />
-
-          <Route exact path="/administracion/homepostspendientes" component={auth.token ?Homepostspendientes   : Login} />
-          <Route exact path="/administracion/searchusers" component={auth.token ? Searchusers : Login} />
  
-          <Route exact path="/administracion/listausuariosbloqueados" component={auth.token ? Listausuariosbloqueados: Login} />
-          <Route exact path="/administracion/roles" component={auth.token ? Roles: Login} />
+return (
+  <Router>
+    <Alert />
+    <input type="checkbox" id="theme" />
+    <div className={`App ${(status || modal) && 'mode'}`}>
+      <div className="main">
+        <Header />
+        {status && <StatusModal />}
+        {auth.token && <SocketClient />}
+        {call && <CallModal />}
 
+        {/* 🔹 Usa Switch para que solo una ruta se renderice a la vez */}
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
+          <Route exact path="/post/:id" component={Post} />
+          
+          {/* Protegemos el perfil */}
+          <Route 
+            exact 
+            path="/profile" 
+            render={() => (auth.token ? <Profile /> : <Redirect to="/login" />)}
+          />
 
-
-          <PrivateRouter exact path="/:page" component={PageRender} />
-          <PrivateRouter exact path="/:page/:id" component={PageRender} />
-
-        </div>
+          {/* 🔥 NotFound solo se renderiza si ninguna otra ruta coincide */}
+          <Route component={NotFound} />
+        </Switch>
       </div>
-    </Router>
-  );
+    </div>
+  </Router>
+)
+
 }
 
 export default App;

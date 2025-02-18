@@ -15,22 +15,25 @@ export const POST_TYPES = {
 
 export const getPosts = (token) => async (dispatch) => {
     try {
-        dispatch({ type: POST_TYPES.LOADING_POST, payload: true })
-        const res = await getDataAPI('posts', token)
-        
+        dispatch({ type: POST_TYPES.LOADING_POST, payload: true });
+
+        // Si el token es necesario solo para usuarios autenticados, hacemos la petición sin token
+        const res = token ? await getDataAPI('posts', token) : await getDataAPI('posts');
+
         dispatch({
             type: POST_TYPES.GET_POSTS,
-            payload: {...res.data, page: 2}
-        })
+            payload: { ...res.data, page: 2 },
+        });
 
-        dispatch({ type: POST_TYPES.LOADING_POST, payload: false })
+        dispatch({ type: POST_TYPES.LOADING_POST, payload: false });
     } catch (err) {
         dispatch({
             type: GLOBALTYPES.ALERT,
-            payload: {error: err.response.data.msg}
-        })
+            payload: { error: err.response?.data?.msg || "Error al cargar los posts" },
+        });
     }
-}
+};
+
 
 
  
@@ -92,10 +95,10 @@ export const unLikePost = ({post, auth, socket}) => async (dispatch) => {
     }
 }
 
-export const getPost = ({detailPost, id, auth}) => async (dispatch) => {
+export const getPost = ({detailPost, id }) => async (dispatch) => {
     if(detailPost.every(post => post._id !== id)){
         try {
-            const res = await getDataAPI(`post/${id}`, auth.token)
+            const res = await getDataAPI(`post/${id}` )
             dispatch({ type: POST_TYPES.GET_POST, payload: res.data.post })
         } catch (err) {
             dispatch({
