@@ -11,7 +11,7 @@ const DescriptionPost = ({ post }) => {
 
     return (
         <div className={`description-container ${isRTL ? 'rtl' : ''}`}>
-            <h3 className="description-title">{t("details", { lng: language })}</h3>
+            
             <div className="post-info">
                 <div className="info-item">
                     <i className="fas fa-comment"></i>

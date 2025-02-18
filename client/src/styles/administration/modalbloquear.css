@@ -45,7 +45,7 @@
 }
 
 .modal-header-bloqueo span:hover {
-  color: red;
+  color: rgb(155, 0, 0);
 }
 
 /* Responsividad */

@@ -1,9 +1,16 @@
 import React from 'react';
+ import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const DescriptionAttributePost = ({ post }) => {
+    const { languageReducer } = useSelector(state => state);
+    const { t } = useTranslation();
+
+    const language = languageReducer.language || "en";
+   
     return (
         <div className="description-container">
-            <h3 className="description-title">Atributos del Post</h3>
+            <h5 className="description-title">{t("details", { lng: language })}</h5>
             <ul className="attributes-list">
                 {post.attributes && Object.keys(post.attributes).length > 0 ? (
                     Object.entries(post.attributes).map(([key, value]) => (

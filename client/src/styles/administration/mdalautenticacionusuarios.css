@@ -1,5 +1,5 @@
 /* Estilos base del modal */
-.modal {
+.modalautenticacion {
     position: fixed; /* Fija el modal en la pantalla */
     top: 0;
     left: 0;
@@ -13,7 +13,7 @@
 }
 
 /* Contenido del modal */
-.modal-content {
+.modal-contentautenticacion {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -24,21 +24,21 @@
 }
 
 /* Título del modal */
-.modal-content h3 {
+.modal-contentautenticacion h3 {
     margin: 0 0 15px;
     font-size: 1.5rem;
     color: #333;
 }
 
 /* Párrafo del modal */
-.modal-content p {
+.modal-contentautenticacion p {
     margin: 0 0 20px;
     font-size: 1rem;
     color: #666;
 }
 
 /* Botones del modal */
-.modal-content button {
+.modal-contentautenticacion button {
     padding: 10px 20px;
     margin: 0 10px;
     border: none;
@@ -49,13 +49,13 @@
 }
 
 /* Botón "Cerrar" */
-.modal-content button:first-of-type {
+.modal-contentautenticacion button:first-of-type {
     background: #e0e0e0;
     color: #333;
 }
 
 /* Botón "Registrarse" */
-.modal-content button:last-of-type {
+.modal-contentautenticacion button:last-of-type {
     background: #007bff;
     color: white;
 }

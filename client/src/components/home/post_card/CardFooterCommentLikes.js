@@ -86,8 +86,8 @@ const CardFooterCommentLikes = ({ post }) => {
                 </h6>
             </div>
             {showAuthModal && (
-                <div className="modal">
-                    <div className="modal-content">
+                <div className="modalautenticacion">
+                    <div className="modal-contentautenticacion">
                         <h3> {t('You must register to be able to like', { lng: languageReducer.language })}</h3>
                         <p>{t('Please log in or register to continue.', { lng: languageReducer.language })} </p>
                         <button onClick={handleCloseModal}>{t('close', { lng: languageReducer.language })}</button>

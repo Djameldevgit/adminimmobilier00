@@ -25,6 +25,11 @@ import CallModal from './components/message/CallModal'
 import NotFound from './components/NotFound'
 import Post from './pages/post'
 import Profile from './pages/profile'
+import Annonces from './pages/annonces';
+import Roles from './pages/administracion/roles'
+import Searchusers from './pages/administracion/searchusers'
+import Listausuariosbloqueados from './pages/administracion/listausuariosbloqueados'
+import Homepostspendientes from './pages/administracion/homepostspendientes'
 
 function App() {
   const { auth, status, modal, call } = useSelector(state => state)
@@ -61,21 +66,24 @@ return (
         {auth.token && <SocketClient />}
         {call && <CallModal />}
 
-        {/* 🔹 Usa Switch para que solo una ruta se renderice a la vez */}
+ 
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/post/:id" component={Post} />
-          
-          {/* Protegemos el perfil */}
+          <Route exact path="/annonces" component={auth.token ? Annonces : Login} />
+          <Route exact path="/administracion/roles" component={auth.token ? Roles : Login} />
+          <Route exact path="/administracion/searchusers" component={auth.token ? Searchusers : Login} />
+          <Route exact path="/administracion/listausuariosbloqueados" component={auth.token ? Listausuariosbloqueados : Login}/>
+          <Route exact path="/administracion/homepostspendientes" component={auth.token ? Homepostspendientes : Login} />
           <Route 
             exact 
             path="/profile" 
             render={() => (auth.token ? <Profile /> : <Redirect to="/login" />)}
           />
 
-          {/* 🔥 NotFound solo se renderiza si ninguna otra ruta coincide */}
+          
           <Route component={NotFound} />
         </Switch>
       </div>
