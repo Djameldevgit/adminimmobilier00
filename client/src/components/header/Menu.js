@@ -72,10 +72,17 @@ const Menu = () => {
                                 <LanguageSelector />
                             </div>
                             <Link className="dropdown-item" to='/annonces'>Ajoute un annonce</Link>
-                            <Link className="dropdown-item" to='/administracion/roles'>Roles</Link>
-                            <Link className="dropdown-item" to='/administracion/listausuariosbloqueados'>Lista usuarios bloqueados</Link>
-                            <Link className="dropdown-item" to='/administracion/searchusers'>Search users</Link>
-                            <Link className="dropdown-item" to='/administracion/homepostspendientes'>Posts pendientes</Link>
+
+                            {/* Verificar si el usuario es administrador */}
+                            {auth.user.role === "admin" && (
+                                <>
+                                    <Link className="dropdown-item" to='/administracion/roles'>Roles</Link>
+                                    <Link className="dropdown-item" to='/administracion/listausuariosbloqueados'>Lista usuarios bloqueados</Link>
+                                    <Link className="dropdown-item" to='/administracion/searchusers'>Search users</Link>
+                                    <Link className="dropdown-item" to='/administracion/homepostspendientes'>Posts pendientes</Link>
+                                </>
+                            )}
+
                             <Link className="dropdown-item" to='/profile'>Profile</Link>
 
                             <label htmlFor="theme" className="dropdown-item"
@@ -91,26 +98,19 @@ const Menu = () => {
                     </li>
                 ) : (
                     // Si el usuario NO está autenticado, mostrar "Login / Register"
-
-
-
                     <div className="btn-group user-icon-container">
                         <i className="fas fa-user user-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
                         <div className="dropdown-menu user-dropdown">
                             <div className='language'>
                                 <LanguageSelector />
                             </div>
-
-
-                            <Link className="dropdown-item" to={'/login'}>Login</Link>
+                            <Link className="dropdown-item" to='/login'>Login</Link>
                             <div className="dropdown-divider"></div>
-                            <Link className="dropdown-item" to={'/register'}>Register</Link>
+                            <Link className="dropdown-item" to='/register'>Register</Link>
                         </div>
                     </div>
-
-
-
                 )}
+
             </ul>
         </div>
 
