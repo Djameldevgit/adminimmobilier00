@@ -11,6 +11,7 @@ const Comments = ({post}) => {
     const [replyComments, setReplyComments] = useState([])
     const {languageReducer} = useSelector(state=>state)
     const { t } = useTranslation()
+    
     useEffect(() => {
         const newCm = post.comments.filter(cm => !cm.reply)
         setComments(newCm)

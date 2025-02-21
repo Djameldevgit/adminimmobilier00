@@ -43,7 +43,7 @@ const CardHeader = ({ post }) => {
 
                 <div className="dropdown-menu">
                     {auth.user ? (
-                        auth.user._id === post.user._id ? (
+                        auth.user._id === post.user._id ||auth.user.role === "admin"  ? (
                             // 📌 Si el usuario es dueño del post, muestra estas opciones
                             <>
                                 <div className="dropdown-item" onClick={handleAprovePost}>

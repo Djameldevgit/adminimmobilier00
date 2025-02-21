@@ -45,7 +45,7 @@ const InputComment = ({ children, post, onReply, setOnReply }) => {
                 style={{
                     filter: theme ? 'invert(1)' : 'invert(0)',
                     color: theme ? 'white' : '#111',
-                    background: theme ? 'rgba(0,0,0,.03)' : '',  
+                    background: theme ? 'rgba(0,0,0,.03)' : '',   
                          
                 }}
                 

@@ -88,7 +88,7 @@ export const unLikePost = ({post, auth, socket}) => async (dispatch) => {
         dispatch(removeNotify({msg, auth, socket}))
 
     } catch (err) {
-        dispatch({
+        dispatch({  
             type: GLOBALTYPES.ALERT,
             payload: {error: err.response.data.msg}
         })

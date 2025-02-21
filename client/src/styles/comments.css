@@ -1,37 +1,27 @@
-/* ---------- Comment Input ---------- */
-.comment_input {
+.comment_input{
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre el input y el botón */
 }
-
-.comment_input input {
+.comment_input input{
     background: #f7f7f7;
     border: none;
     outline: none;
     flex: 1;
-    padding: 10px 15px; /* Espaciado interno */
-    border-radius: 10px; /* Bordes redondeados */
-    font-size: 14px;
-    color: #333;
-    transition: background 0.3s ease; /* Transición suave */
+    overflow: auto;
+}
+.comment_input .postBtn{
+    border: none;
+    outline: none;
+    background: #f7f7f7;
+    color: blue;
+    font-weight: 600;
 }
 
 .comment_input input:focus {
     background: #e0e0e0; /* Cambio de color al enfocar */
 }
 
-.comment_input .postBtn {
-    border: none;
-    outline: none;
-    background: #ff5e00; /* Azul moderno */
-    color: white; /* Texto blanco */
-    font-weight: 600;
-    padding: 5px 10px; /* Espaciado interno */
-    border-radius: 10px; /* Bordes redondeados */
-    cursor: pointer;
-    transition: background 0.3s ease; /* Transición suave */
-}
+ 
 
 .comment_input .postBtn:hover {
     background: #0056b3; /* Azul más oscuro al hacer hover */

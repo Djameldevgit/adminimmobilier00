@@ -42,13 +42,7 @@
 }
 
 /* Estilos para los campos de entrada */
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
+ 
 
 /* Estilos para los checkboxes */
 .form-group input[type="checkbox"] {
