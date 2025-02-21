@@ -201,8 +201,8 @@ const postCtrl = {
     },
     getUserPosts: async (req, res) => {
         try {
-            const features = new APIfeatures(Posts.find({ user: req.params.id }, { estado: "aprobado" }), req.query)
-                .paginating()
+            const features = new APIfeatures(Posts.find({user: req.params.id}), req.query)
+            .paginating()
             const posts = await features.query.sort("-createdAt")
 
             res.json({
@@ -211,7 +211,7 @@ const postCtrl = {
             })
 
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({msg: err.message})
         }
     },
     getPost: async (req, res) => {
