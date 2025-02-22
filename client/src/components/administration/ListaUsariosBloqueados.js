@@ -1,14 +1,16 @@
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import UserCard from "../UserCard";
 import moment from 'moment';
+ 
 const ListaUsuariosBloqueados = () => {
 
 
   const { userBlockReducer, auth } = useSelector(state => state);
+ 
   const formatDate = (date) => {
     return moment(date).format("DD/MM/YYYY");
   };
-
+ 
   return (
 
     <div className="modal-content">
@@ -41,7 +43,7 @@ const ListaUsuariosBloqueados = () => {
                         Acción
                       </button>
                       <div className="dropdown-menu">
-                        <p className="dropdown-item">Desbloquear</p>
+                        <p className="dropdown-item"  >  Desbloquear</p>
                       </div>
                     </div>
                   </td>

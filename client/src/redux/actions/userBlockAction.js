@@ -63,7 +63,7 @@ export const getBlockedUsers = (token) => async (dispatch) => {
         dispatch({ type: USER_TYPES_BLOCK.LOADING_USER, payload: true });
 
         const res = await getDataAPI('users/block', token);
- console.log(res.data)
+ 
         dispatch({
             type: USER_TYPES_BLOCK.GET_USERS_BLOCK,
             payload: { ...res.data, page: 2 } // Esto mantiene paginación si existe

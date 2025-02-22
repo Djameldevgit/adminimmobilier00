@@ -31,7 +31,7 @@ const userBlockReducer = (state = initialState, action) => {
             case USER_TYPES_BLOCK.GET_USERS_BLOCK:
                 return {
                   ...state,
-                  blockedUsers: action.payload,
+                  blockedUsers: action.payload.blockedUsers,
                 };
 
         default:

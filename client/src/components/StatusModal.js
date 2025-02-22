@@ -11,17 +11,24 @@ import 'rc-slider/assets/index.css';  // Importar los estilos predeterminados
 
 import { crearPostPendiente, updatePost } from '../redux/actions/postAproveAction';
 
-import { handleSubmit, handleCommuneChange, handleWilayaChange,  handleChangeImages, deleteImages, } from './FuncionesStatusModal';
 const StatusModal = () => {
     const { auth, theme, socket, status, } = useSelector((state) => state);
-
 
 
     const dispatch = useDispatch()
 
     const initilastate = {
+
         category: "Immobiler",
-        subCategory: "Vente",
+        subCategory: "",
+
+
+        vente: '',
+        location: '',
+        locationvacances: '',
+        echange: '',
+        cherchelocation: '',
+        chercheachat: '',
 
         title: "",
         description: "",
@@ -80,9 +87,26 @@ const StatusModal = () => {
         { label: 'Papie timbre', value: 'Papie timbre' },
     ];
 
- 
 
-   
+
+    const handleWilayaChange = (event) => {
+        const selectedWilaya = event.target.value;
+        setSelectedWilaya(selectedWilaya);
+
+        const wilayaEncontrada = communesjson.find((wilaya) => wilaya.wilaya === selectedWilaya);
+        const communes = wilayaEncontrada && wilayaEncontrada.commune ? wilayaEncontrada.commune : [];
+
+        if (communes.length > 0) {
+            setSelectedCommune(communes[0]);
+        } else {
+            setSelectedCommune('');
+        }
+    };
+
+    const handleCommuneChange = (event) => {
+        setSelectedCommune(event.target.value);
+    };
+
     const wilayasOptions = communesjson.map((wilaya, index) => (
         <option key={index} value={wilaya.wilaya}>
             {wilaya.wilaya}
@@ -141,7 +165,7 @@ const StatusModal = () => {
             const isAttribute = prevState.attributes && Object.prototype.hasOwnProperty.call(prevState.attributes, name);
 
             if (isAttribute) {
-                // Si el campo pertenece a attributes, actualizamos dentro de attributes
+                // ✅ Si el campo pertenece a attributes, actualizamos dentro de attributes
                 return {
                     ...prevState,
                     attributes: {
@@ -150,7 +174,7 @@ const StatusModal = () => {
                     }
                 };
             } else {
-                // Si es un campo normal, lo actualizamos directamente
+                // ✅ Si es un campo normal, lo actualizamos directamente
                 return {
                     ...prevState,
                     [name]: isCheckbox ? checked : value
@@ -161,7 +185,33 @@ const StatusModal = () => {
 
 
 
- 
+
+
+    const handleChangeImages = e => {
+        const files = [...e.target.files]
+        let err = ""
+        let newImages = []
+
+        files.forEach(file => {
+            if (!file) return err = "File does not exist."
+
+            if (file.size > 1024 * 1024 * 5) {
+                return err = "The image/video largest is 5mb."
+            }
+
+            return newImages.push(file)
+        })
+
+        if (err) dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err } })
+        setImages([...images, ...newImages])
+    }
+
+    const deleteImages = (index) => {
+        const newArr = [...images]
+        newArr.splice(index, 1)
+        setImages(newArr)
+    }
+
     const handleStream = () => {
         setStream(true)
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -193,13 +243,41 @@ const StatusModal = () => {
         tracks.stop()
         setStream(false)
     }
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
+        console.log(postData); // Verifica el contenido de postData antes de enviarlo
+
+        if (images.length === 0) {
+            return dispatch({
+                type: GLOBALTYPES.ALERT,
+                payload: { error: "Por favor agrega una foto o video." },
+            });
+        }
+
+        if (status.onEdit) {
+            dispatch(updatePost({ postData, images, auth, status }));
+        } else {
+            dispatch(crearPostPendiente({ postData, images, auth, socket }));
+        }
+
+        setPostData(initilastate);
+        setImages([]);
+        if (tracks) tracks.stop();
+        dispatch({ type: GLOBALTYPES.STATUS, payload: false });
+    };
 
     useEffect(() => {
-    
+        console.log("status en useEffect:", status);
         if (status?.onEdit) {
             setPostData({
                 subCategory: status.subCategory || "",
+                vente: status.vente || "",
+                location: status.location || "",
+                echange: status.echange || "",
+                cherchelocation: status.cherchelocation || "",
+                chercheachat: status.chercheachat || "",
+                locationvacances: status.locationvacances || "",
                 title: status.title || "",
                 description: status.description || "",
                 price: status.price || "",
@@ -229,21 +307,189 @@ const StatusModal = () => {
         }
     }, [status]);
 
+    const subcategoryy = () => (
+        <div className="form-group">
+            <select name="subCategory" value={postData.subCategory} onChange={handleChangeInput} className="form-control" required>
+                <option value="">Sub Category</option>
+                <option value="vente">Vente</option>
+                <option value="location">Location</option>
+                <option value="locationvacances">Location Vacances</option>
+                <option value="echange">Echange</option>
+                <option value="cherchelocation">Cherche Location</option>
+                <option value="chercheachat">Cherche Achat</option>
+            </select>
+        </div>
+    )
+
+    const itemsvente = () => (
+        <div>
+            <select style={{ display: "flex", alignItems: "flex-end" }}
+                onChange={handleChangeInput}
+                value={postData.title} name="title" className="form-control" required >  <option value="">Sélectionner une sub catégorie</option>
+                <option value="Appartement">Appartement</option>
+                <option value="Terrain">Terrain</option>
+                <option value="Villa">Villa</option>
+                <option value="Local">Local</option>
+                <option value="Carcasse">Carcasse</option>
+                <option value="Niveau de villa">Niveau de Villa</option>
+                <option value="Terrain Agricole">Terrain Agricole</option>
+                <option value="Immeuble">Immeuble</option>
+                <option value="Duplex">Duplex</option>
+                <option value="Studio">Studio</option>
+                <option value="Hangar">Hangar</option>
+                <option value="Bungalow">Bungalow</option>
+                <option value="Usine">Usine</option>
+                <option value="Autre">Autre</option>
+            </select>
+            <small className='text-danger'>Ce champ est requis</small>
+        </div>
+    )
+    const superficie = () => (
+        <div>
+            <input
+                type="number"
+                name="superficie"
+                value={postData.attributes.superficie}
+                onChange={handleChangeInput}
+                className="form-control"
+                placeholder="Superficie en M²"
+            />
+        </div>
+    )
+    const etage = () => (
+        <div>
+            <input
+                type="number"
+                name="etage"
+                value={postData.attributes.etage}
+                onChange={handleChangeInput}
+                className="form-control"
+                placeholder="Etage(s)"
+            />
+        </div>
+    )
+    const piece = () => (
+        <div>
+            <input
+                type="number"
+                name="piece"
+                value={postData.attributes.piece}
+                onChange={handleChangeInput}
+                className="form-control"
+                placeholder="Pièces"
+            />
+        </div>
+    )
+    const promoteurimmobilier = () => (
+        <FormCheck
+            type="checkbox"
+            name="promoteurimmobilier"
+            checked={postData.attributes.promoteurimmobilier}
+            onChange={handleChangeInput}
+            label="Promotion immobilière"
+        />
+    )
+
+    const parlepromoteurimmobilier = () => (
+        <FormCheck
+            type="checkbox"
+            name="parlepromoteurimmobilier"
+            checked={postData.attributes.parlepromoteurimmobilier}
+            onChange={handleChangeInput}
+            label="Parle du promoteur immobilier"
+        />
+    )
+    const conditiondepeyemente = () => (
+        <Select
+            placeholder="Conditions de paiement"
+            value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
+            options={conditiondepeyement}
+            onChange={handleChangeSelectconditiondepeyement}
+            isMulti={true}
+        />
+    )
+    const specificaciones = () => (
+        <Select
+            placeholder="Spécifications"
+            value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
+            options={specifications}
+            onChange={handleChangeSpecifications}
+            isMulti={true}
+            closeMenuOnSelect={false}
+        />
+    )
+    const papeles = () => (
+        <Select
+            placeholder="paiers"
+            value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
+            options={papiers}
+            onChange={handleChangeSelectpapiers}
+            isMulti={true}
+            closeMenuOnSelect={false}
+        />
+    )
+
+
+
+    ///ALGUQUILERRRRRRRRRRRRRRRRRRRRRRRRRR
+    const pagopor = () => (
+        <div className="form-group">
+            <label className='text-primary'> Transaction</label>
+            <select
+                multiple={false}
+                name="tiempodealquiler"
+                value={postData.tiempodealquiler}
+                onChange={handleChangeInput}
+                className="form-control"
+            >
+                <option >Paiement par</option>
+                <option value="Jour">Jour</option>
+                <option value="Semaine">Semaine</option>
+                <option value="1 mois">1 mois</option>
+                <option value="3 mois">3 mois</option>
+                <option value="1 mois">1 mois</option>
+                <option value="12 mois">12 mois</option>
+                <option value="24 mois">24 mois</option>
+                <option value="Plus de 24 mois">Plus de 24 mois</option>
+
+            </select>
+        </div>
+    )
+
+
+    const itemsventelocationvacances = () => (
+        <div>
+            <select style={{ display: "flex", alignItems: "flex-end" }}
+                onChange={handleChangeInput}
+                value={postData.title} name="title" className="form-control" required >  <option value="">Sélectionner une sub catégorie</option>
+                <option value="Appartement">Appartement</option>
+                <option value="Villa">Villa</option>
+                <option value="Local">Local</option>
+                <option value="Niveau de villa">Niveau de Villa</option>
+                <option value="Duplex">Duplex</option>
+                <option value="Studio">Studio</option>
+                <option value="Bungalow">Bungalow</option>
+                <option value="Autre">Autre</option>
+            </select>
+            <small className='text-danger'>Ce champ est requis</small>
+        </div>
+    )
+
+
+
 
     return (
         <div className='status_modal'  >
-            <form onSubmit={(e) => handleSubmit(e, postData, images, auth, socket, status, dispatch, setPostData, setImages, tracks, initilastate, crearPostPendiente, updatePost)}>
+            <form onSubmit={handleSubmit}>
                 <div className="status_header">
-                    <h5 className="m-0">Annonces Vente Immobilière</h5>
+                    <h5 className="m-0">Annonces Immobilière</h5>
                     <span onClick={() => dispatch({
                         type: GLOBALTYPES.STATUS, payload: false
                     })}>
                         &times;
                     </span>
                 </div>
-
                 <div className="status_body">
-
                     <div className="form-group"   >
                         <input
                             className='form-control'
@@ -251,991 +497,2299 @@ const StatusModal = () => {
                             name="category"
                             value={postData.category}
                             onChange={handleChangeInput}
-                            placeholder="subCategory"
-                        // readOnly
-                        />
-                        <input
-                            className='form-control'
-                            type="hidden"
-                            name="subCategory"
-                            value={postData.subCategory}
-                            onChange={handleChangeInput}
-                            placeholder="subCategory"
-                        // readOnly
-                        />
-
-
-
+                            placeholder="Category" />
                     </div>
-
-
                     <div className="form-group">
-
-                        <select style={{ display: "flex", alignItems: "flex-end" }}
-
-                            onChange={handleChangeInput}
-                            value={postData.title}
-                            name="title"
-                            className="form-control"
-                            required
-                        >
-                            <option value="">Sélectionner une sub catégorie</option>
-                            <option value="Appartement">Appartement</option>
-                            <option value="Terrain">Terrain</option>
-                            <option value="Villa">Villa</option>
-                            <option value="Local">Local</option>
-                            <option value="Carcasse">Carcasse</option>
-                            <option value="Niveau de villa">Niveau de Villa</option>
-                            <option value="Terrain Agricole">Terrain Agricole</option>
-                            <option value="Immeuble">Immeuble</option>
-                            <option value="Duplex">Duplex</option>
-                            <option value="Studio">Studio</option>
-                            <option value="Hangar">Hangar</option>
-                            <option value="Bungalow">Bungalow</option>
-                            <option value="Usine">Usine</option>
-                            <option value="Autre">Autre</option>
-
-                        </select>
-                        <small className='text-danger'>Ce champ est requis</small>
+                        {subcategoryy()}
                     </div>
 
-                    {postData.title === "Appartement" && (
-
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group" >
-                                <div className="form-group" >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="promoteurimmobilier"
-                                        checked={postData.attributes.promoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Promotion immobilière"
-                                    />
-                                </div>
-
-                                <div className="form-group"  >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="parlepromoteurimmobilier"
-                                        checked={postData.attributes.parlepromoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Parle du promoteur immobilier"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
 
 
 
-                    {postData.title === "Terrain" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-
-
-                        </div>
-                    )}
-
-
-                    {postData.title === "Villa" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group" >
-                                <div className="form-group" >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="promoteurimmobilier"
-                                        checked={postData.attributes.promoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Promotion immobilière"
-                                    />
-                                </div>
-
-                                <div className="form-group"  >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="parlepromoteurimmobilier"
-                                        checked={postData.attributes.parlepromoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Parle du promoteur immobilier"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
 
 
-                    {postData.title === "Local" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group" >
-                                <div className="form-group" >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="promoteurimmobilier"
-                                        checked={postData.attributes.promoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Promotion immobilière"
-                                    />
-                                </div>
-
-                                <div className="form-group"  >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="parlepromoteurimmobilier"
-                                        checked={postData.attributes.parlepromoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Parle du promoteur immobilier"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
-                    {postData.title === "Carcasse" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
-
-
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
-                    {postData.title === "Niveau de villa" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
-                    {postData.title === "Terrain Agricole" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {postData.title === "Immeuble" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
 
 
 
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
 
-                    {postData.title === "Duplex" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
 
-                            <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group" >
-                                <div className="form-group" >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="promoteurimmobilier"
-                                        checked={postData.attributes.promoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Promotion immobilière"
-                                    />
-                                </div>
 
-                                <div className="form-group"  >
-                                    <FormCheck
-                                        type="checkbox"
-                                        name="parlepromoteurimmobilier"
-                                        checked={postData.attributes.parlepromoteurimmobilier}
-                                        onChange={handleChangeInput}
-                                        label="Parle du promoteur immobilier"
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
-                    {postData.title === "Studio" && (
+
+                    {postData.subCategory === "vente" && (
                         <div>
-                            <div className='form-group'>
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="superficie"
-                                        value={postData.attributes.superficie}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Superficie en M²"
-                                    />
-                                </div>
-                                <div className="form-group"  >
-                                    <input
-                                        type="number"
-                                        name="etage"
-                                        value={postData.attributes.etage}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Etage(s)"
-                                    />
-                                </div>
+                            <div className="form-group">
+                                {itemsvente()}
+                            </div>
 
-                                <div className="form-group" >
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
                                     <div className="form-group" >
-                                        <FormCheck
-                                            type="checkbox"
-                                            name="promoteurimmobilier"
-                                            checked={postData.attributes.promoteurimmobilier}
-                                            onChange={handleChangeInput}
-                                            label="Promotion immobilière"
-                                        />
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Terrain" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Local" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Carcasse" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Terrain Agricole" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Immeuble" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Duplex" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            <input
+                                                type="number"
+                                                name="superficie"
+                                                value={postData.attributes.superficie}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Superficie en M²"
+                                            />
+                                        </div>
+                                        <div className="form-group"  >
+                                            <input
+                                                type="number"
+                                                name="etage"
+                                                value={postData.attributes.etage}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Etage(s)"
+                                            />
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {postData.subCategory === "location" && (
+                        <div>
+                            <div className="form-group">
+                                {itemsvente()}
+                            </div>
+
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {superficie()}
                                     </div>
 
                                     <div className="form-group"  >
-                                        <FormCheck
-                                            type="checkbox"
-                                            name="parlepromoteurimmobilier"
-                                            checked={postData.attributes.parlepromoteurimmobilier}
-                                            onChange={handleChangeInput}
-                                            label="Parle du promoteur immobilier"
-                                        />
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
                                     </div>
                                 </div>
+                            )}
+                            {postData.title === "Terrain" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
 
-                            </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Local" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
 
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Carcasse" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Terrain Agricole" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Immeuble" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Duplex" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            <input
+                                                type="number"
+                                                name="superficie"
+                                                value={postData.attributes.superficie}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Superficie en M²"
+                                            />
+                                        </div>
+                                        <div className="form-group"  >
+                                            <input
+                                                type="number"
+                                                name="etage"
+                                                value={postData.attributes.etage}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Etage(s)"
+                                            />
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
 
-                    {postData.title === "Hangar" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
-                            <div className="form-group"  >
-                                <input
-                                    type="number"
-                                    name="etage"
-                                    value={postData.attributes.etage}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Etage(s)"
-                                />
-                            </div>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {postData.subCategory === "locationvacances" && (
+                        <div>
                             <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
+                                {itemsventelocationvacances()}
                             </div>
+
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Duplex" && (
+
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            <input
+                                                type="number"
+                                                name="superficie"
+                                                value={postData.attributes.superficie}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Superficie en M²"
+                                            />
+                                        </div>
+                                        <div className="form-group"  >
+                                            <input
+                                                type="number"
+                                                name="etage"
+                                                value={postData.attributes.etage}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Etage(s)"
+                                            />
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
 
-                    {postData.title === "Bungalow" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+                    {postData.subCategory === "echange" && (
+                        <div>
                             <div className="form-group">
-                                <div className="form-group">
-                                    <input
-                                        type="number"
-                                        name="piece"
-                                        value={postData.attributes.piece}
-                                        onChange={handleChangeInput}
-                                        className="form-control"
-                                        placeholder="Pièces"
-                                    />
-                                </div>
+                                {itemsvente()}
                             </div>
 
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            )}
+                            {postData.title === "Terrain" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            )}
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            {postData.title === "Local" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Carcasse" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Terrain Agricole" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Immeuble" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Duplex" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            <input
+                                                type="number"
+                                                name="superficie"
+                                                value={postData.attributes.superficie}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Superficie en M²"
+                                            />
+                                        </div>
+                                        <div className="form-group"  >
+                                            <input
+                                                type="number"
+                                                name="etage"
+                                                value={postData.attributes.etage}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Etage(s)"
+                                            />
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="text-primary">Spécifications</label>
+                                            <div className="form-group">
+                                                {conditiondepeyemente()}
+                                            </div>
+                                            <div className="form-group">
+                                                {specificaciones()}
+                                            </div>
+                                            <div className="form-group">
+                                                {papeles()}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
-                    {postData.title === "Usine" && (
-                        <div className='form-group'>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {postData.subCategory === "cherchelocation" && (
+                        <div>
                             <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
+                                {itemsvente()}
                             </div>
 
-                            <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            )}
+
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
+                            )}
+                            {postData.title === "Local" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            {postData.title === "Carcasse" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Terrain Agricole" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Immeuble" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Duplex" && (
+                                <div className='form-group'>
+
+                                    <div className="form-group">
+                                        {pagopor()}
+                                    </div>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            <input
+                                                type="number"
+                                                name="superficie"
+                                                value={postData.attributes.superficie}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Superficie en M²"
+                                            />
+                                        </div>
+                                        <div className="form-group"  >
+                                            <input
+                                                type="number"
+                                                name="etage"
+                                                value={postData.attributes.etage}
+                                                onChange={handleChangeInput}
+                                                className="form-control"
+                                                placeholder="Etage(s)"
+                                            />
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Terrain" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
-                    {postData.title === "Autre" && (
-                        <div className='form-group'>
-                            <div className="form-group">
-                                <input
-                                    type="number"
-                                    name="superficie"
-                                    value={postData.attributes.superficie}
-                                    onChange={handleChangeInput}
-                                    className="form-control"
-                                    placeholder="Superficie en M²"
-                                />
-                            </div>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    {postData.subCategory === "chercheachat" && (
+
+                        <div>
                             <div className="form-group">
-                                <label className="text-primary">Spécifications</label>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Conditions de paiement"
-                                        value={conditiondepeyement.filter(obj => postData.attributes.conditiondepeyement && postData.attributes.conditiondepeyement.includes(obj.value))}
-                                        options={conditiondepeyement}
-                                        onChange={handleChangeSelectconditiondepeyement}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="Spécifications"
-                                        value={specifications.filter(obj => postData.attributes.specifications && postData.attributes.specifications.includes(obj.value))}
-                                        options={specifications}
-                                        onChange={handleChangeSpecifications}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <Select
-                                        placeholder="paiers"
-                                        value={papiers.filter(obj => postData.attributes.papiers && postData.attributes.papiers.includes(obj.value))}
-                                        options={papiers}
-                                        onChange={handleChangeSelectpapiers}
-                                        isMulti={true}
-                                        closeMenuOnSelect={false}
-                                    />
-                                </div>
+                                {itemsvente()}
                             </div>
+
+                            {postData.title === "Appartement" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Terrain" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Local" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Carcasse" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Niveau de villa" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {postData.title === "Terrain Agricole" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Immeuble" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Duplex" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group" >
+                                        <div className="form-group" >
+                                            {promoteurimmobilier()}
+                                        </div>
+
+                                        <div className="form-group"  >
+                                            {parlepromoteurimmobilier()}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Studio" && (
+                                <div>
+                                    <div className='form-group'>
+                                        <div className="form-group">
+                                            {superficie()}
+                                        </div>
+                                        <div className="form-group"  >
+                                            {etage()}
+                                        </div>
+
+                                        <div className="form-group" >
+                                            <div className="form-group" >
+                                                {promoteurimmobilier()}
+                                            </div>
+
+                                            <div className="form-group"  >
+                                                {parlepromoteurimmobilier()}
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="text-primary">Spécifications</label>
+                                            <div className="form-group">
+                                                {conditiondepeyemente()}
+                                            </div>
+                                            <div className="form-group">
+                                                {specificaciones()}
+                                            </div>
+                                            <div className="form-group">
+                                                {papeles()}
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Hangar" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group"  >
+                                        {etage()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Bungalow" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        {piece()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Usine" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {postData.title === "Autre" && (
+                                <div className='form-group'>
+                                    <div className="form-group">
+                                        {superficie()}
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-primary">Spécifications</label>
+                                        <div className="form-group">
+                                            {conditiondepeyemente()}
+                                        </div>
+                                        <div className="form-group">
+                                            {specificaciones()}
+                                        </div>
+                                        <div className="form-group">
+                                            {papeles()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    <div className="form-group"  >
 
+
+
+
+
+
+
+
+
+
+                    <div className="form-group">
                         <textarea name="description" value={postData.description}
                             onChange={handleChangeInput}
                             placeholder='Description...'
-
-
                         />
                     </div>
                     <div className="card-body form-group">
@@ -1326,8 +2880,14 @@ const StatusModal = () => {
 
                     <div className="form-group">
                         <small className='text-primary'>Adresse du bien obligatoire</small>
-                        <select onChange={(e) => handleWilayaChange(e, setSelectedWilaya, setSelectedCommune)}>
-        
+                        <select
+                            multiple={false}
+                            className="form-control"
+                            name="wilaya"
+                            value={selectedWilaya}
+                            onChange={handleWilayaChange}
+
+                        >
                             <option value="">Sélectionnez une wilaya</option>
                             {wilayasOptions}
                         </select>
@@ -1337,7 +2897,14 @@ const StatusModal = () => {
 
                     <div className="form-group">
 
-                    <select onChange={(e) => handleCommuneChange(e, setSelectedCommune)}>
+                        <select
+                            multiple={false}
+                            className="form-control"
+                            name="commune"
+                            value={selectedCommune}
+                            onChange={handleCommuneChange}
+
+                        >
                             <option value="">Sélectionnez la commune</option>
                             {communesOptions}
                         </select>
@@ -1460,7 +3027,8 @@ const StatusModal = () => {
 
                                     <div className="file_upload">
                                         <i className="fas fa-image" />
-                                        <input type="file" multiple onChange={(e) => handleChangeImages(e, images, setImages, dispatch)} />
+                                        <input type="file" name="file" id="file"
+                                            multiple accept="image/*,video/*" onChange={handleChangeImages} />
                                     </div>
                                 </>
                         }

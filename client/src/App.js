@@ -6,7 +6,7 @@ import Login from './pages/login';
 import Register from './pages/register';
 
 import Post from './pages/post';
-import Annonces from './pages/annonces';
+ 
 import Roles from './pages/administracion/roles';
 import Searchusers from './pages/administracion/searchusers';
 import Listausuariosbloqueados from './pages/administracion/listausuariosbloqueados';
@@ -67,43 +67,23 @@ function App() {
           {call && <CallModal />}
 
           <Switch>
-  <Route
-    exact
-    path="/profile/:id"
-    render={(props) =>
-      auth.token ? <Profile {...props} /> : <Redirect to="/login" />
-    }
-  />
+            <Route exact path="/profile/:id" render={(props) => auth.token ? <Profile {...props} /> : <Redirect to="/login" /> }
+            />
+            <Route exact path="/" component={Home} />
+            <Route exact path="/login" render={() => auth.token ? <Redirect to={`/profile/${auth.user._id}`} /> : <Login />  }  />
 
-  <Route exact path="/" component={Home} />
-  
-  <Route
-    exact
-    path="/login"
-    render={() =>
-      auth.token ? <Redirect to={`/profile/${auth.user._id}`} /> : <Login />
-    }
-  />
-  
-  <Route
-    exact
-    path="/register"
-    render={() =>
-      auth.token ? <Redirect to={`/profile/${auth.user._id}`} /> : <Register />
-    }
-  />
+            <Route exact path="/register" render={() =>   auth.token ? <Redirect to={`/profile/${auth.user._id}`} /> : <Register /> } />
 
-  <Route exact path="/post/:id" component={Post} />
+            <Route exact path="/post/:id" component={Post} />
 
-  {/* Rutas protegidas */}
-  <Route exact path="/annonces" render={() => (auth.token ? <Annonces /> : <Redirect to="/login" />)} />
-  <Route exact path="/administracion/roles" render={() => (auth.token ? <Roles /> : <Redirect to="/login" />)} />
-  <Route exact path="/administracion/searchusers" render={() => (auth.token ? <Searchusers /> : <Redirect to="/login" />)} />
-  <Route exact path="/administracion/listausuariosbloqueados" render={() => (auth.token ? <Listausuariosbloqueados /> : <Redirect to="/login" />)} />
-  <Route exact path="/administracion/homepostspendientes" render={() => (auth.token ? <Homepostspendientes /> : <Redirect to="/login" />)} />
+            {/* Rutas protegidas */}
+              <Route exact path="/administracion/roles" render={() => (auth.token ? <Roles /> : <Redirect to="/login" />)} />
+            <Route exact path="/administracion/searchusers" render={() => (auth.token ? <Searchusers /> : <Redirect to="/login" />)} />
+            <Route exact path="/administracion/listausuariosbloqueados" render={() => (auth.token ? <Listausuariosbloqueados /> : <Redirect to="/login" />)} />
+            <Route exact path="/administracion/homepostspendientes" render={() => (auth.token ? <Homepostspendientes /> : <Redirect to="/login" />)} />
 
-  <Route component={NotFound} />
-</Switch>
+            <Route component={NotFound} />
+          </Switch>
 
         </div>
       </div>

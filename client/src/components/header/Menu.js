@@ -71,7 +71,8 @@ const Menu = () => {
                             <div className='language'>
                                 <LanguageSelector />
                             </div>
-                            <Link className="dropdown-item" to='/annonces'>Ajoute un annonce</Link>
+                            <Link className="dropdown-item" onClick={() =>  dispatch({ type: GLOBALTYPES.STATUS,payload:true })}> Ajouter un annnoces
+                            </Link>
 
                             {/* Verificar si el usuario es administrador */}
                             {auth.user.role === "admin" && (

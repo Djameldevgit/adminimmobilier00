@@ -40,7 +40,7 @@ const postCtrl = {
     crearPostPendiente: async (req, res) => {
         try {
             const { postData, images } = req.body;
-            const { category, subCategory, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
+            const { category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
                 quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, } = postData || {};
 
             if (!title || !category || !subCategory) {
@@ -48,7 +48,7 @@ const postCtrl = {
             }
 
             const newPost = new Posts({
-                category, subCategory, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
+                category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
                 quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes,
                 attributes,
                 images,
@@ -134,13 +134,13 @@ const postCtrl = {
     },
     updatePost: async (req, res) => {
         try {
-            const { category, subCategory, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
+            const { category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
                 quartier, email, telefono, contadordevisitas, informacion, comentarios, images, attributes } = req.body;
 
             const post = await Posts.findOneAndUpdate(
                 { _id: req.params.id },
                 {
-                    category, subCategory, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
+                    category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
                     quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, images
                 },
                 { new: true } // Para que retorne el post actualizado
@@ -157,7 +157,7 @@ const postCtrl = {
                     msg: "Updated Post!",
                     newPost: {
                         ...post._doc,
-                        category, subCategory, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
+                        category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
                         quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, images
               
                     }

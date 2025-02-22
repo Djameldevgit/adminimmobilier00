@@ -10,7 +10,7 @@ import { POST_TYPES } from '../../redux/actions/postAction'
 
 const Posts = () => {
     const { homePosts, auth, theme } = useSelector(state => state)
-     
+
     const dispatch = useDispatch()
 
     const [load, setLoad] = useState(false)
@@ -20,28 +20,33 @@ const Posts = () => {
         const res = await getDataAPI(`posts?limit=${homePosts.page * 9}`, auth.token)
 
         dispatch({
-            type: POST_TYPES.GET_POSTS, 
-            payload: {...res.data, page: homePosts.page + 1}
+            type: POST_TYPES.GET_POSTS,
+            payload: { ...res.data, page: homePosts.page + 1 }
         })
 
         setLoad(false)
     }
 
     return (
-        <div className="post_thumb">
-            {
-                homePosts.posts.map(post => (
-                    <PostCard key={post._id} post={post} theme={theme} />
-                ))
-            }
+        <div>
 
-            {
-                load && <img src={LoadIcon} alt="loading" className="d-block mx-auto" />
-            }
 
-            
+            <div className="post_thumb">
+                {
+                    homePosts.posts.map(post => (
+                        <PostCard key={post._id} post={post} theme={theme} />
+                    ))
+                }
+
+                {
+                    load && <img src={LoadIcon} alt="loading" className="d-block mx-auto" />
+                }
+
+
+
+            </div>
             <LoadMoreBtn result={homePosts.result} page={homePosts.page}
-            load={load} handleLoadMore={handleLoadMore} />
+                load={load} handleLoadMore={handleLoadMore} />
         </div>
     )
 }

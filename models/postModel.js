@@ -11,7 +11,32 @@ const postSchema = new mongoose.Schema({
     type: String,
 
   },
- 
+  
+ vente: {
+    type: String,
+  
+  },
+  location: {
+    type: String,
+  
+  },
+  locationvacances: {
+    type: String,
+  
+  },
+  echange: {
+    type: String,
+  
+  },
+  cherchelocation: {
+    type: String,
+  
+  },
+  chercheachat: {
+    type: String,
+  
+  },
+
 title: {
   type: String,
 

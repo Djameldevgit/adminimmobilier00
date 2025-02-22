@@ -113,7 +113,7 @@ const RightSide = () => {
     },[id, dispatch, auth, message.data])
 
 
-    // Load More
+    // Voir Plus
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
             if(entries[0].isIntersecting){
@@ -203,7 +203,7 @@ const RightSide = () => {
             style={{height: media.length > 0 ? 'calc(100% - 180px)' : ''}} >
                 <div className="chat_display" ref={refDisplay}>
                     <button style={{marginTop: '-25px', opacity: 0}} ref={pageEnd}>
-                        Load more
+                        Voir Plus
                     </button>
 
                     {

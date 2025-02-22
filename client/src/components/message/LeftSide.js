@@ -53,7 +53,7 @@ const LeftSide = () => {
         dispatch(getConversations({auth}))
     },[dispatch, auth, message.firstLoad])
 
-    // Load More
+    // Voir Plus
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
             if(entries[0].isIntersecting){
@@ -126,7 +126,7 @@ const LeftSide = () => {
                     </>
                 }
                
-               <button ref={pageEnd} style={{opacity: 0}} >Load More</button>
+               <button ref={pageEnd} style={{opacity: 0}} >Voir Plus</button>
             </div>
         </>
     )

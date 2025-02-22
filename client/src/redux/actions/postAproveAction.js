@@ -164,6 +164,16 @@ export const updatePost = ({ postData, images, auth, status }) => async (dispatc
     if (status.title === postData.title
         && !attributesChanged 
         && JSON.stringify(status.attributes) === JSON.stringify(postData.attributes) // ⬅️ Comparar attributes
+      
+       
+        && status.locationvacances === postData.locationvacances
+        && status.vente === postData.vente
+        && status.location === postData.location
+        && status.locationvacances === postData.locationvacances
+        && status.echange === postData.echange
+        && status.cherchelocation === postData.cherchelocation
+        && status.chercheachat === postData.chercheachat
+      
         && status.description === postData.description
         && status.price === postData.price
         && status.unidaddeprecio === postData.unidaddeprecio
