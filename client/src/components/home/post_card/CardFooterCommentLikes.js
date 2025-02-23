@@ -1,109 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import LikeButton from '../../LikeButton';
-import { useSelector, useDispatch } from 'react-redux';
-import { likePost, unLikePost } from '../../../redux/actions/postAction';
-import { useTranslation } from 'react-i18next'
+import React, { useState } from "react";
+import { useLocation, useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const CardFooterCommentLikes = ({ post }) => {
-    const [isLike, setIsLike] = useState(false);
-    const [loadLike, setLoadLike] = useState(false);
+    const history = useHistory();
+    const location = useLocation();
+    const isDetailPage = location.pathname === `/post/${post._id}`;
+    const { t } = useTranslation();
 
-    const { auth, socket } = useSelector(state => state);
-    const dispatch = useDispatch();
-    const history = useHistory()
-    const { languageReducer } = useSelector(state => state)
-    const { t } = useTranslation()
-    const location = useLocation(); // Obtiene la ruta actual
-    const isDetailPage = location.pathname === `/post/${post._id}`; // Verifica si estamos en la página de detalles
-    const [showAuthModal, setShowAuthModal] = useState(false); // Estado para controlar el 
-    // Likes
-    useEffect(() => {
-        // Verifica si el usuario está autenticado
-        if (auth.user && auth.user._id) {
-            // Si el usuario está autenticado, verifica si ya dio like
-            if (post.likes.find(like => like._id === auth.user._id)) {
-                setIsLike(true);
-            } else {
-                setIsLike(false);
-            }
+    const { auth, languageReducer } = useSelector((state) => state); // Obtiene auth y languageReducer del estado global
+    const [showModal, setShowModal] = useState(false);
+
+    const handleCommentClick = () => {
+        if (!auth.token) {
+            setShowModal(true);
         } else {
-            // Si el usuario no está autenticado, asegúrate de que isLike sea false
-            setIsLike(false);
+            history.push(`/post/${post._id}`);
         }
-    }, [post.likes, auth.user]);
-
-    const handleLike = async () => {
-        if (!auth.token) {
-            setShowAuthModal(true);
-            return;
-        }
-
-        if (loadLike) return;
-
-        setLoadLike(true);
-        await dispatch(likePost({ post, auth, socket }));
-        setLoadLike(false);
     };
 
-    const handleUnLike = async () => {
-        if (!auth.token) {
-            alert('Debes registrarte para dar like');
-            return;
-        }
-
-
-        if (loadLike) return;
-
-        setLoadLike(true);
-        await dispatch(unLikePost({ post, auth, socket }));
-        setLoadLike(false);
-    };
-
-    // Ocultar la card en la página de detalles
     if (isDetailPage) return null;
-    const handleCloseModal = () => {
-        setShowAuthModal(false); // Cerrar el modal
-    };
 
     return (
-        <div className="card_footer">
-            <div className="footer-content d-flex justify-content-between align-items-center mt-2 mx-3">
+        <>
+            <div className="card_footer">
+                <div className="footer-content d-flex justify-content-between align-items-center mt-2 mx-3">
+                    <div className="d-flex align-items-center">
+                        <span className="mr-2">Price:</span>
+                        <span className="mr-3 text-danger">{post.price}</span>
+                        <span>{post.unidaddeprecio}</span>
+                    </div>
 
-                {/* Like button + text */}
-                <div className="d-flex align-items-center">
-                    <LikeButton
-                        isLike={isLike}
-                        handleLike={handleLike}
-                        handleUnLike={handleUnLike}
-                    />
-                    <span className="ms-1">{post.likes.length} likes</span>
+                    <h6
+                        className="mt-2"
+                        style={{ cursor: "pointer" }}
+                        onClick={handleCommentClick}
+                    >
+                        <i className="fas fa-comment-alt"></i> {post.comments.length}
+                    </h6>
                 </div>
-
-                {/* Comments count */}
-                <h6 className="comments-count">
-                    {post.comments.length} comments
-                </h6>
             </div>
-            {showAuthModal && (
-                <div className="modalautenticacion">
-                    <div className="modal-contentautenticacion">
-                        <h3> {t('You must register to be able to like', { lng: languageReducer.language })}</h3>
-                        <p>{t('Please log in or register to continue.', { lng: languageReducer.language })} </p>
-                        <button onClick={handleCloseModal}>{t('close', { lng: languageReducer.language })}</button>
-                        <button onClick={() => history.push('/register')}>{t('register', { lng: languageReducer.language })} </button>
+
+            {/* Modal de autenticación */}
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h4>{t("title", { lng: languageReducer.language })}</h4>
+                        <p>{t("message", { lng: languageReducer.language })}</p>
+                        <div className="modal-buttons">
+                            <button onClick={() => history.push("/login")}>
+                                {t("login", { lng: languageReducer.language })}
+                            </button>
+                            <button onClick={() => history.push("/register")}>
+                                {t("register", { lng: languageReducer.language })}
+                            </button>
+                            <button onClick={() => setShowModal(false)}>
+                                {t("close", { lng: languageReducer.language })}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
-
-        </div>
-
-
-
-
+        </>
     );
 };
 
 export default CardFooterCommentLikes;
-
-

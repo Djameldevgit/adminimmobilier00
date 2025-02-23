@@ -41,7 +41,7 @@ const postCtrl = {
         try {
             const { postData, images } = req.body;
             const { category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
-                quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, } = postData || {};
+                quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios, duraciondelanuncio, attributes, } = postData || {};
 
             if (!title || !category || !subCategory) {
                 return res.status(400).json({ msg: "Faltan campos obligatorios" });
@@ -49,7 +49,7 @@ const postCtrl = {
 
             const newPost = new Posts({
                 category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
-                quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes,
+                quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios, duraciondelanuncio, attributes,
                 attributes,
                 images,
                 user: req.user._id,
@@ -135,13 +135,13 @@ const postCtrl = {
     updatePost: async (req, res) => {
         try {
             const { category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
-                quartier, email, telefono, contadordevisitas, informacion, comentarios, images, attributes } = req.body;
+                quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios, duraciondelanuncio,  attributes, images  } = req.body;
 
             const post = await Posts.findOneAndUpdate(
                 { _id: req.params.id },
                 {
                     category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
-                    quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, images
+                    quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios,duraciondelanuncio,   attributes, images
                 },
                 { new: true } // Para que retorne el post actualizado
             ).populate("user likes", "avatar username fullname")
@@ -158,7 +158,7 @@ const postCtrl = {
                     newPost: {
                         ...post._doc,
                         category, subCategory,  vente, location, locationvacances, echange, cherchelocation, chercheachat, title, description, price, unidaddeprecio, oferta, change, wilaya, commune,
-                        quartier, email, telefono, contadordevisitas, informacion, comentarios, attributes, images
+                        quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios,duraciondelanuncio,   attributes, images
               
                     }
                 })
@@ -217,21 +217,23 @@ const postCtrl = {
     getPost: async (req, res) => {
         try {
             const post = await Posts.findById(req.params.id)
-                .populate("user", "avatar username") // ❌ Eliminamos `followers`
-                .populate({
-                    path: "comments",
-                    populate: {
-                        path: "user",
-                        select: "avatar username" // ❌ Eliminamos `likes` y `-password`
-                    }
-                });
-    
-            if (!post) return res.status(404).json({ msg: 'This post does not exist.' });
-    
-            res.json({ post });
-    
+            .populate("user likes", "avatar username fullname followers")
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "user likes",
+                    select: "-password"
+                }
+            })
+
+            if(!post) return res.status(400).json({msg: 'This post does not exist.'})
+
+            res.json({
+                post
+            })
+
         } catch (err) {
-            return res.status(500).json({ msg: err.message });
+            return res.status(500).json({msg: err.message})
         }
     },
     

@@ -154,7 +154,7 @@ export const updatePost = ({postData, images, auth, status}) => async (dispatch)
         })
     }
 }*/
-export const updatePost = ({ postData, images, auth, status }) => async (dispatch) => {
+export const updatePost = ({ postData, images,wilaya, commune, auth, status }) => async (dispatch) => {
     let media = []
     const imgNewUrl = images.filter(img => !img.url)
     const imgOldUrl = images.filter(img => img.url)
@@ -164,8 +164,8 @@ export const updatePost = ({ postData, images, auth, status }) => async (dispatc
     if (status.title === postData.title
         && !attributesChanged 
         && JSON.stringify(status.attributes) === JSON.stringify(postData.attributes) // ⬅️ Comparar attributes
-      
-       
+        
+    
         && status.locationvacances === postData.locationvacances
         && status.vente === postData.vente
         && status.location === postData.location
@@ -178,16 +178,18 @@ export const updatePost = ({ postData, images, auth, status }) => async (dispatc
         && status.price === postData.price
         && status.unidaddeprecio === postData.unidaddeprecio
         && status.oferta === postData.oferta
-        && status.change === postData.change
-        && status.wilaya === postData.wilaya
-        && status.commune === postData.commune
+        && status.change === postData.change 
+     &&   console.log("status.wilaya:", status.wilaya, "postData.wilaya:", postData.wilaya)
+     &&   console.log("status.commune:", status.commune, "postData.commune:", postData.commune)
+    
+       
         && status.quartier === postData.quartier
         && status.email === postData.email
         && status.telefono === postData.telefono
         && status.contadordevisitas === postData.contadordevisitas
-        && status.informacion === postData.informacion
-        && status.comentarios === postData.comentarios
-     
+        && status.informacioncontacto === postData.informacioncontacto
+        && status.activarcomentarios === postData.activarcomentarios
+        && status.duraciondelanuncio === postData.duraciondelanuncio
         && imgNewUrl.length === 0
         && imgOldUrl.length === status.images.length
     ) return;

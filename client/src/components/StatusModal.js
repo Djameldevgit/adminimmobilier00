@@ -41,9 +41,10 @@ const StatusModal = () => {
         quartier: "",
         email: "",
         telefono: "",
-        contadordevisitas: "",
-        informacion: "",
-        comentarios: "",
+        contadordevisitas: false,
+        informacioncontacto: false,
+        activarcomentarios:false,
+        duraciondelanuncio:'',
         attributes: {
             superficie: "",
             etage: "",
@@ -59,8 +60,8 @@ const StatusModal = () => {
 
     const [postData, setPostData] = useState(initilastate)
     const [images, setImages] = useState([])
-    const [selectedWilaya, setSelectedWilaya] = useState([]);
-    const [selectedCommune, setSelectedCommune] = useState([]);
+    const [selectedWilaya, setSelectedWilaya] = useState("");
+    
     const [stream, setStream] = useState(false)
     const videoRef = useRef()
     const refCanvas = useRef()
@@ -88,38 +89,47 @@ const StatusModal = () => {
     ];
 
 
-
     const handleWilayaChange = (event) => {
         const selectedWilaya = event.target.value;
         setSelectedWilaya(selectedWilaya);
-
+    
+        // Buscar la wilaya seleccionada
         const wilayaEncontrada = communesjson.find((wilaya) => wilaya.wilaya === selectedWilaya);
-        const communes = wilayaEncontrada && wilayaEncontrada.commune ? wilayaEncontrada.commune : [];
-
-        if (communes.length > 0) {
-            setSelectedCommune(communes[0]);
-        } else {
-            setSelectedCommune('');
-        }
+        const communes = wilayaEncontrada ? wilayaEncontrada.commune : [];
+    
+        // Establecer la primera comuna disponible o vacío
+        
+    
+        // Actualizar postData con la wilaya seleccionada
+        setPostData((prevState) => ({
+            ...prevState,
+            wilaya: selectedWilaya,
+            commune: communes.length > 0 ? communes[0] : "", // Actualizar comuna si hay una disponible
+        }));
     };
-
-    const handleCommuneChange = (event) => {
-        setSelectedCommune(event.target.value);
-    };
-
     const wilayasOptions = communesjson.map((wilaya, index) => (
         <option key={index} value={wilaya.wilaya}>
             {wilaya.wilaya}
         </option>
     ));
-
-    const communesOptions = communesjson.find((wilaya) => wilaya.wilaya === selectedWilaya)?.commune?.map((commune, index) => (
-        <option key={index} value={commune}>
-            {commune}
-        </option>
-    ));
-
-
+    const communesOptions = selectedWilaya
+    ? communesjson
+          .find((wilaya) => wilaya.wilaya === selectedWilaya)
+          ?.commune?.map((commune, index) => (
+              <option key={index} value={commune}>
+                  {commune}
+              </option>
+          ))
+    : [];
+    const handleCommuneChange = (event) => {
+        const selectedCommune = event.target.value;
+        
+        // Actualizar postData con la comuna seleccionada
+        setPostData((prevState) => ({
+            ...prevState,
+            commune: selectedCommune,
+        }));
+    };
 
     const handleChangeSpecifications = (selectedOptions) => {
         setPostData(prevState => ({
@@ -245,9 +255,12 @@ const StatusModal = () => {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        console.log(postData); // Verifica el contenido de postData antes de enviarlo
-
+        if (!postData.wilaya || !postData.commune) {
+            return dispatch({
+                type: GLOBALTYPES.ALERT,
+                payload: { error: "Por favor selecciona una wilaya y una comuna." },
+            });
+        }
         if (images.length === 0) {
             return dispatch({
                 type: GLOBALTYPES.ALERT,
@@ -289,9 +302,10 @@ const StatusModal = () => {
                 quartier: status.quartier || "",
                 email: status.email || "",
                 telefono: status.telefono || "",
-                contadordevisitas: status.contadordevisitas || "",
-                informacion: status.informacion || "",
-                comentarios: status.comentarios || "",
+                contadordevisitas: status.contadordevisitas || false,
+                informacioncontacto: status.informacioncontacto || false,
+                activarcomentarios: status.activarcomentarios || false,
+                duraciondelanuncio: status.duraciondelanuncio || "",
                 attributes: {
                     superficie: status.attributes?.superficie || "",
                     etage: status.attributes?.etage || "",
@@ -304,6 +318,9 @@ const StatusModal = () => {
                 },
             });
             setImages(status.images || []);
+            setSelectedWilaya(status.wilaya || "");
+       
+
         }
     }, [status]);
 
@@ -2877,40 +2894,35 @@ const StatusModal = () => {
                         </select>
                     </div>
 
-
                     <div className="form-group">
-                        <small className='text-primary'>Adresse du bien obligatoire</small>
-                        <select
-                            multiple={false}
-                            className="form-control"
-                            name="wilaya"
-                            value={selectedWilaya}
-                            onChange={handleWilayaChange}
+                <small className="text-primary">Adresse du bien obligatoire</small>
+                <select
+                    multiple={false}
+                    className="form-control"
+                    name="wilaya"
+                    value={postData.wilaya} // Usar postData.wilaya
+                    onChange={handleWilayaChange}
+                >
+                    <option value="">Sélectionnez une wilaya</option>
+                    {wilayasOptions} {/* Opciones de wilayas */}
+                </select>
+                <small className="text-danger">Ce champ est requis</small>
+            </div>
 
-                        >
-                            <option value="">Sélectionnez une wilaya</option>
-                            {wilayasOptions}
-                        </select>
-                        <small className='text-danger'>Ce champ est requis</small>
-                    </div>
-
-
-                    <div className="form-group">
-
-                        <select
-                            multiple={false}
-                            className="form-control"
-                            name="commune"
-                            value={selectedCommune}
-                            onChange={handleCommuneChange}
-
-                        >
-                            <option value="">Sélectionnez la commune</option>
-                            {communesOptions}
-                        </select>
-                        <small className='text-danger'>Ce champ est requis</small>
-                    </div>
-
+            {/* Campo Commune */}
+            <div className="form-group">
+                <select
+                    multiple={false}
+                    className="form-control"
+                    name="commune"
+                    value={postData.commune} // Usar postData.commune
+                    onChange={handleCommuneChange}
+                >
+                    <option value="">Sélectionnez la commune</option>
+                    {communesOptions} {/* Opciones de communes */}
+                </select>
+                <small className="text-danger">Ce champ est requis</small>
+            </div>
 
                     <div className="form-group">
 
@@ -2946,8 +2958,8 @@ const StatusModal = () => {
                         <div className="form-group">
                             <FormCheck
                                 type="checkbox"
-                                checked={postData.informacion}
-                                onChange={(e) => setPostData({ ...postData, informacion: e.target.checked })}
+                                checked={postData.informacioncontacto}
+                                onChange={(e) => setPostData({ ...postData, informacioncontacto: e.target.checked })}
                                 label="Autoriser les informations de contact"
                             />
                         </div>
@@ -2955,8 +2967,8 @@ const StatusModal = () => {
                         <div className="form-group">
                             <FormCheck
                                 type="checkbox"
-                                checked={postData.comentarios}
-                                onChange={(e) => setPostData({ ...postData, comentarios: e.target.checked })}
+                                checked={postData.activarcomentarios}
+                                onChange={(e) => setPostData({ ...postData, activarcomentarios: e.target.checked })}
                                 label="Activer les commentaires"
                             />
                         </div>

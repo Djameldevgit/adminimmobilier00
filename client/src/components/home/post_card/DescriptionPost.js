@@ -13,6 +13,16 @@ const DescriptionPost = ({ post }) => {
         <div className={`description-container ${isRTL ? 'rtl' : ''}`}>
             
             <div className="post-info">
+
+            <div className="info-item">
+                    <i className="fas fa-comment"></i>
+                    <span>Wilaya : {post.wilaya || t("notSpecified", { lng: language })}</span>
+                </div>
+                <div className="info-item">
+                    <i className="fas fa-thumbs-up"></i>
+                    <span> Commune: {post.commune || t("notSpecified", { lng: language })}</span>
+                </div>
+
                 <div className="info-item">
                     <i className="fas fa-comment"></i>
                     <span>{t("comments", { lng: language })}: {post.comments.length || t("notSpecified", { lng: language })}</span>

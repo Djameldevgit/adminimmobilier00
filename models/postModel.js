@@ -84,25 +84,22 @@ title: {
 
   },
   contadordevisitas: {
-    type: String,
-
-  },
-  informacion: {
-    type: String,
-
-  },
-  comentarios: {
-    type: String,
-
-  },
-  comentarios: {
     type: Boolean,
 
   },
-  comentarios: {
+  informacioncontacto: {
     type: Boolean,
 
   },
+  activarcomentarios: {
+    type: Boolean,
+
+  },
+  duraciondelanuncio: {
+    type: String,
+
+  },
+  
   attributes: {
     type: Object, // Cambiar Map por Object
     default: {}   // Establecer un valor predeterminado

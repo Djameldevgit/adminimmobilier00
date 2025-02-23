@@ -6,12 +6,13 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   resources: {
     en: {
       translation: {
-        //USER MESSAGE MODAL AUTETICACION
-        "You must register to be able to like":"You must register to be able to like",
-        "Please log in or register to continue.":  "Please log in or register to continue." ,
-           "close":  "Close" ,
-
-        //COMMENT
+        "title": "Log in or sign up",
+        "message": "To comment on this post, you need to be authenticated.",
+        "login": "Log in",
+        "register": "Sign up",
+        "close": "Close",
+        "You must register to be able to like": "You must register to be able to like",
+        "Please log in or register to continue.": "Please log in or register to continue.",
         "readMore": "Read more",
         "likes": "Likes",
         "update": "Update",
@@ -29,30 +30,12 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
         "email": "Email",
         "show": "Show",
         "hide": "Hide",
-
-        //REGISTER
-
         "realestate": "Real Estate",
-        "username": "User Name",
-
-
-
-
-        "register": "Register",
         "already_have_account": "Already have an account?",
-        "login_now": "Login Now" ?
-
-          //LOGIN
-
-          "email_help" : "We'll never share your email with anyone else.",
-
-        "login": "Login",
+        "login_now": "Login Now",
+        "email_help": "We'll never share your email with anyone else.",
         "no_account": "You don't have an account?",
         "register_now": "Register Now",
-
-
-        //NAVBAR
-        "realestate": "IMMOBILIER",
         "post": "Publish a post",
         "usermanagement": "User management",
         "complaints": "complaints",
@@ -63,40 +46,28 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
         "pendingposts": "Pending posts",
         "light_mode": "Light mode",
         "dark_mode": "Dark mode",
-
         "profile": "Profile",
         "logout": "Logout",
-
-        //COMMENT
-        "remove": "Remove",
-        "see_more_comments": "See more comments...",
-        "hide_comments": "Hide comments...",
-        //INFORMACION POST
         "details": "Post Details",
         "comments": "Comments",
-        "likes": "Likes",
         "location": "Location",
-        "email": "Email",
         "seller": "Seller",
         "allowComments": "Allow Comments",
         "views": "Views",
         "adDuration": "Ad Duration",
         "notSpecified": "Not Specified"
-
-
       }
     },
 
     fr: {
       translation: {
- //USER MESSAGE MODAL AUTETICACION
- "You must register to be able to like":"Vous devez vous inscrire pour pouvoir aimer",
- "Please log in or register to continue.":  "Veuillez vous connecter ou vous inscrire pour continuer" ,
-           "close":  "Fermer" ,
-
-
-
-        //COMMENTS
+        "title": "Connectez-vous ou inscrivez-vous",
+        "message": "Pour commenter cette publication, vous devez être authentifié.",
+        "login": "Se connecter",
+        "register": "S'inscrire",
+        "close": "Fermer",
+        "You must register to be able to like": "Vous devez vous inscrire pour pouvoir aimer",
+        "Please log in or register to continue.": "Veuillez vous connecter ou vous inscrire pour continuer",
         "readMore": "Lire plus",
         "likes": "Mentions j'aime",
         "update": "Mettre à jour",
@@ -114,46 +85,17 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
         "email": "E-mail",
         "show": "Afficher",
         "hide": "Masquer",
-
-
-
-        //REGISTER
         "realestate": "IMMOBILIER",
-        "username": "Nom d'utilisateur",
-        "email": "Adresse e-mail",
-
-        "register": "S'inscrire",
         "already_have_account": "Vous avez déjà un compte?",
         "login_now": "Connectez-vous maintenant",
-
-
-        //LOGIN
-
         "email_help": "Nous ne partagerons jamais votre e-mail avec qui que ce soit.",
-
-        "login": "Se connecter",
         "no_account": "Vous n'avez pas de compte?",
         "register_now": "Inscrivez-vous maintenant",
-
-        //REMOVE
-        "remove": "Supprimer",
-        "see_more_comments": "Voir plus de commentaires...",
-
-        "hide_content": "Masquer le contenu",
-        "read_more": "Lire la suite",
-        "likes": "likes",
-        "update": "mettre à jour",
-        "cancel": "annuler",
-        "reply": "répondre",
-
-        "Dark mode": "Mode sombre",
-        "Light mode": "Mode éclairé",
-        //INFORMACION POST
+        "light_mode": "Mode éclairé",
+        "dark_mode": "Mode sombre",
         "details": "Détails du Post",
         "comments": "Commentaires",
-        "likes": "Mentions J'aime",
         "location": "Emplacement",
-        "email": "E-mail",
         "seller": "Vendeur",
         "allowComments": "Autoriser les commentaires",
         "views": "Vues",
@@ -166,86 +108,72 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
       translation: {
 
 //USER MESSAGE MODAL AUTETICACION
-"You must register to be able to like":"يجب عليك التسجيل لتتمكن من الإعجاب",
-"Please log in or register to continue.":  "الرجاء تسجيل الدخول أو التسجيل للمتابعة." ,
-"close":  "غلق" ,
-        //COMMENTS 
-        "readMore": "اقرأ المزيد",
-        "likes": "إعجابات",
-        "update": "تحديث",
-        "cancel": "إلغاء",
-        "reply": "رد",
-        "seeMoreComments": "عرض المزيد من التعليقات...",
-        "hideComments": "إخفاء التعليقات...",
-        "edit": "تعديل",
-        "remove": "إزالة",
-        "placeholder": "أضف تعليقك...",
-        "post": "نشر",
-        "contact": "الاتصال والتفاصيل",
-        "username": "اسم المستخدم",
-        "phone": "الهاتف",
-        "email": "البريد الإلكتروني",
-        "show": "عرض",
-        "hide": "إخفاء",
+ 
+  "title": "تسجيل الدخول أو التسجيل",
+  "message": "للتعليق على هذا المنشور، يجب أن تكون مصادقًا.",
+  "login": "تسجيل الدخول",
+  "register": "تسجيل",
+  "close": "إغلاق",
 
+  "must_register_to_like": "يجب عليك التسجيل لتتمكن من الإعجاب",
+  "please_login_or_register": "الرجاء تسجيل الدخول أو التسجيل للمتابعة.",
 
-        //REGISTER
-        "realestate": "العقارات",
-        "username": "اسم المستخدم",
-        "email": "البريد الإلكتروني",
+  // COMMENTS
+  "read_more": "اقرأ المزيد",
+  "likes": "إعجابات",
+  "update": "تحديث",
+  "cancel": "إلغاء",
+  "reply": "رد",
+  "see_more_comments": "عرض المزيد من التعليقات...",
+  "hide_comments": "إخفاء التعليقات...",
+  "edit": "تعديل",
+  "remove": "إزالة",
+  "comment_placeholder": "أضف تعليقك...",
+  "post_comment": "نشر",
 
-        "confirm_password": "تأكيد كلمة المرور",
+  // CONTACT & USER INFO
+  "contact": "الاتصال والتفاصيل",
+  "username": "اسم المستخدم",
+  "phone": "الهاتف",
+  "email": "البريد الإلكتروني",
+  "show": "عرض",
+  "hide": "إخفاء",
 
-        "hide": "إخفاء",
-        "register": "تسجيل",
-        "already_have_account": "لديك حساب بالفعل؟",
-        "login_now": "تسجيل الدخول الآن",
-        //COMMENT 
+  // REGISTER
+  "realestate": "العقارات",
+  "confirm_password": "تأكيد كلمة المرور",
+  "already_have_account": "لديك حساب بالفعل؟",
+  "login_now": "تسجيل الدخول الآن",
 
-        "remove": "إزالة",
-        "see_more_comments": "عرض المزيد من التعليقات...",
+  // POST INFORMATION
+  "post_details": "تفاصيل المنشور",
+  "comments": "التعليقات",
+  "location": "الموقع",
+  "seller": "البائع",
+  "allow_comments": "السماح بالتعليقات",
+  "views": "المشاهدات",
+  "ad_duration": "مدة الإعلان",
+  "not_specified": "غير محدد",
 
+  // AUTH
+  "email_help": "لن نشارك بريدك الإلكتروني مع أي شخص آخر.",
+  "password": "كلمة المرور",
+  "no_account": "ليس لديك حساب؟",
+  "register_now": "سجل الآن",
 
-        "read_more": "اقرأ المزيد",
-
-        "update": "تحديث",
-        "cancel": "إلغاء",
-        "reply": "الرد",
-        "likes": "الإعجابات",
-
-        //INFORMACION  POST 
-        "details": "تفاصيل المنشور",
-        "comments": "التعليقات",
-        "likes": "الإعجابات",
-        "location": "الموقع",
-        "email": "البريد الإلكتروني",
-        "seller": "البائع",
-        "allowComments": "السماح بالتعليقات",
-        "views": "المشاهدات",
-        "adDuration": "مدة الإعلان",
-        "notSpecified": "غير محدد",
-
-        "email_help": "لن نشارك بريدك الإلكتروني مع أي شخص آخر.",
-        "password": "كلمة المرور",
-        "show": "عرض",
-
-        "login": "تسجيل الدخول",
-        "no_account": "ليس لديك حساب؟",
-        "register_now": "سجل الآن",
-
-        "post": "نشر إعلان",
-        "usermanagement": "إدارة المستخدمين",
-        "complaints": "الشكاوى",
-        "activityusers": "نشاط المستخدمين",
-        "searchusers": "البحث عن المستخدمين",
-        "lastusers": "آخر المستخدمين",
-        "userroles": "أدوار المستخدمين",
-        "pendingposts": "المشاركات المعلقة",
-        "light_mode": "وضع الإضاءة",
-        "dark_mode": "الوضع الداكن",
-        "Profile": "الملف الشخصي",
-        "Logout": "تسجيل الخروج",
-
+  // GENERAL
+  "post": "نشر إعلان",
+  "user_management": "إدارة المستخدمين",
+  "complaints": "الشكاوى",
+  "activity_users": "نشاط المستخدمين",
+  "search_users": "البحث عن المستخدمين",
+  "last_users": "آخر المستخدمين",
+  "user_roles": "أدوار المستخدمين",
+  "pending_posts": "المشاركات المعلقة",
+  "light_mode": "وضع الإضاءة",
+  "dark_mode": "الوضع الداكن",
+  "profile": "الملف الشخصي",
+  "logout": "تسجيل الخروج"
       }
     },
 
