@@ -23,12 +23,12 @@ const StatusModal = () => {
         subCategory: "",
 
 
-        vente: '',
-        location: '',
-        locationvacances: '',
-        echange: '',
-        cherchelocation: '',
-        chercheachat: '',
+        Vente: '',
+        Location: '',
+        Location_Vacances: '',
+        Echange: '',
+        Cherche_Location: '',
+        Cherche_Achat: '',
 
         title: "",
         description: "",
@@ -285,12 +285,12 @@ const StatusModal = () => {
         if (status?.onEdit) {
             setPostData({
                 subCategory: status.subCategory || "",
-                vente: status.vente || "",
-                location: status.location || "",
-                echange: status.echange || "",
-                cherchelocation: status.cherchelocation || "",
-                chercheachat: status.chercheachat || "",
-                locationvacances: status.locationvacances || "",
+                Vente: status.Vente || "",
+                Location: status.Location || "",
+                Echange: status.Echange || "",
+                Cherche_Location: status.Cherche_Location || "",
+                Cherche_Achat: status.Cherche_Achat || "",
+                Location_Vacances: status.Location_Vacances || "",
                 title: status.title || "",
                 description: status.description || "",
                 price: status.price || "",
@@ -328,13 +328,14 @@ const StatusModal = () => {
         <div className="form-group">
             <select name="subCategory" value={postData.subCategory} onChange={handleChangeInput} className="form-control" required>
                 <option value="">Sub Category</option>
-                <option value="vente">Vente</option>
-                <option value="location">Location</option>
-                <option value="locationvacances">Location Vacances</option>
-                <option value="echange">Echange</option>
-                <option value="cherchelocation">Cherche Location</option>
-                <option value="chercheachat">Cherche Achat</option>
+                <option value="Vente">Vente</option>
+                <option value="Location">Location</option>
+                <option value="Location_Vacances">Location Vacances</option>
+                <option value="Echange">Echange</option>
+                <option value="Cherche_Location">Cherche Location</option>
+                <option value="Cherche_Achat">Cherche Achat</option>
             </select>
+            <small className='text-danger'>Ce champ est requis</small>
         </div>
     )
 
@@ -536,7 +537,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "vente" && (
+                    {postData.subCategory === "Vente" && (
                         <div>
                             <div className="form-group">
                                 {itemsvente()}
@@ -938,7 +939,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "location" && (
+                    {postData.subCategory === "Location" && (
                         <div>
                             <div className="form-group">
                                 {itemsvente()}
@@ -1336,7 +1337,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "locationvacances" && (
+                    {postData.subCategory === "Location_Vacances" && (
                         <div>
                             <div className="form-group">
                                 {itemsventelocationvacances()}
@@ -1616,7 +1617,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "echange" && (
+                    {postData.subCategory === "Echange" && (
                         <div>
                             <div className="form-group">
                                 {itemsvente()}
@@ -2011,7 +2012,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "cherchelocation" && (
+                    {postData.subCategory === "Cherche_Location" && (
                         <div>
                             <div className="form-group">
                                 {itemsvente()}
@@ -2423,7 +2424,7 @@ const StatusModal = () => {
 
 
 
-                    {postData.subCategory === "chercheachat" && (
+                    {postData.subCategory === "Cherche_Achat" && (
 
                         <div>
                             <div className="form-group">
@@ -2886,7 +2887,7 @@ const StatusModal = () => {
                             onChange={handleChangeInput}
                             className="form-control"
                         >
-                            <option  >Changee</option>
+                            <option  >Change</option>
 
                             <option value="J'accepte l'échange">J'accepte l'échange</option>
                             <option value="Pas d'échanges">Pas d'échanges </option>
@@ -2940,7 +2941,7 @@ const StatusModal = () => {
                     <div className="form-group">
 
                         <input onChange={handleChangeInput} value={postData.email} name="email" type="email" className="form-control" placeholder='Adresse mail ' />
-
+                        <small className='text-danger'>Ce champ est requis</small>
                     </div>
 
 
@@ -3051,7 +3052,7 @@ const StatusModal = () => {
 
                     <div className="status_footer">
                         <button className="btn btn-secondary w-100" type="submit">
-                            Post
+                            Publie
                         </button>
                     </div>
                 </div>

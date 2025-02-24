@@ -55,7 +55,15 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
         "allowComments": "Allow Comments",
         "views": "Views",
         "adDuration": "Ad Duration",
-        "notSpecified": "Not Specified"
+        "notSpecified": "Not Specified",
+        "Delete All":"Delete All",
+        "Notification":"Notification",
+        "he liked your message":"he liked your message",
+        "added a new post":"added a new post",
+"has started to follow you":"has started to follow you",
+"has stopped following you":"has stopped following you",
+"has deleted a post":"has deleted a post",
+
       }
     },
 
@@ -100,8 +108,14 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
         "allowComments": "Autoriser les commentaires",
         "views": "Vues",
         "adDuration": "Durée de l'annonce",
-        "notSpecified": "Non spécifié"
-
+        "notSpecified": "Non spécifié",
+        "Delete All":"Supprimer tout",
+        "Notification":"Notification",
+        "he liked your message":"il a aimé ton message",
+        "added a new post":"Ajouté un nouveau message",
+        "has started to follow you":"a commencé à te suivre",
+        "has stopped following you":"a arrêté de te suivre",
+        "has deleted a post":"a supprimé une publication",
       }
     },
     ar: {
@@ -173,7 +187,15 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   "light_mode": "وضع الإضاءة",
   "dark_mode": "الوضع الداكن",
   "profile": "الملف الشخصي",
-  "logout": "تسجيل الخروج"
+  "logout": "تسجيل الخروج",
+  "Delete All":"حذف الكل",
+  "Notification":"إشعارات",
+  "he liked your message":"لقد أحب رسالتك",
+  "added a new post":"تمت إضافة مشاركة جديدة",
+  "has started to follow you":"لقد بدأت في متابعتك",
+  "has stopped following you":"توقف عن متابعتك",
+  "has deleted a post":"حذفت منشورا",
+
       }
     },
 

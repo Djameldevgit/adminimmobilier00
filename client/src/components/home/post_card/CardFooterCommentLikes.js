@@ -36,8 +36,8 @@ const CardFooterCommentLikes = ({ post }) => {
                     </div>
 
                     {/* Comentarios */}
-                    <h6 className="mt-2" style={{ cursor: "pointer" }} onClick={handleCommentClick}>
-                        <i className="fas fa-comment-alt"></i> {post.comments.length}
+                    <h6 className="mt-0" style={{ cursor: "pointer" }} onClick={handleCommentClick}>
+                      {post.comments.length} <span> <i className="fas fa-comment-alt"></i></span> 
                     </h6>
                 </div>
 

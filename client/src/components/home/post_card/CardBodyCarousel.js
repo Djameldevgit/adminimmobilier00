@@ -31,7 +31,7 @@ const CardBodyCarousel = ({ post }) => {
         if (loadLike) return;
 
         setLoadLike(true);
-        await dispatch(likePost({ post, auth, socket }));
+        dispatch(likePost({ post, auth, socket, t, languageReducer }));
         setLoadLike(false);
     };
 
@@ -40,7 +40,7 @@ const CardBodyCarousel = ({ post }) => {
         if (loadLike) return;
 
         setLoadLike(true);
-        await dispatch(unLikePost({ post, auth, socket }));
+        dispatch(unLikePost({ post, auth, socket, t, languageReducer }));
         setLoadLike(false);
     };
 

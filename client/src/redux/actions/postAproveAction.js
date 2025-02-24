@@ -166,20 +166,20 @@ export const updatePost = ({ postData, images,wilaya, commune, auth, status }) =
         && JSON.stringify(status.attributes) === JSON.stringify(postData.attributes) // ⬅️ Comparar attributes
         
     
-        && status.locationvacances === postData.locationvacances
-        && status.vente === postData.vente
-        && status.location === postData.location
-        && status.locationvacances === postData.locationvacances
-        && status.echange === postData.echange
-        && status.cherchelocation === postData.cherchelocation
-        && status.chercheachat === postData.chercheachat
+       
+        && status.Vente === postData.Vente
+        && status.Location === postData.Location
+        && status.Location_Vacances === postData.Location_Vacances
+        && status.Echange === postData.Echange
+        && status.Cherche_Location === postData.Cherche_Location
+        && status.Cherche_Achat === postData.Cherche_Achatt
       
         && status.description === postData.description
         && status.price === postData.price
         && status.unidaddeprecio === postData.unidaddeprecio
         && status.oferta === postData.oferta
         && status.change === postData.change 
-     &&   console.log("status.wilaya:", status.wilaya, "postData.wilaya:", postData.wilaya)
+     &&    status.wilaya, "postData.wilaya:", postData.wilaya
      &&   console.log("status.commune:", status.commune, "postData.commune:", postData.commune)
     
        

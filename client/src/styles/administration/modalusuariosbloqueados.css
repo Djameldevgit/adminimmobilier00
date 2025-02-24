@@ -45,10 +45,7 @@
  
 
 /* Estilos para los checkboxes */
-.form-group input[type="checkbox"] {
-  margin-right: 10px;
-}
-
+ 
 /* Pie del modal */
 .modal-footer {
   display: flex;

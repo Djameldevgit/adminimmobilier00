@@ -6,12 +6,13 @@ import { GLOBALTYPES } from '../../../redux/actions/globalTypes';
 import { deletePost } from '../../../redux/actions/postAction';
 import { BASE_URL } from '../../../utils/config';
 import { aprovarPostPendiente } from '../../../redux/actions/postAproveAction';
-
+import { useTranslation } from 'react-i18next';
 const CardHeader = ({ post }) => {
-    const { auth, socket } = useSelector(state => state);
+    const { auth, socket,languageReducer } = useSelector(state => state);
     const dispatch = useDispatch();
     const history = useHistory();
-
+   
+    const { t } = useTranslation();
     const handleAprovePost = () => {
         if (window.confirm("¿Deseas aprobar este post?")) {
             dispatch(aprovarPostPendiente({ post, auth }));
@@ -25,7 +26,7 @@ const CardHeader = ({ post }) => {
 
     const handleDeletePost = () => {
         if (window.confirm("Are you sure want to delete this post?")) {
-            dispatch(deletePost({ post, auth, socket }));
+            dispatch(deletePost({ post, auth, socket, t, languageReducer}));
             return history.push("/");
         }
     };

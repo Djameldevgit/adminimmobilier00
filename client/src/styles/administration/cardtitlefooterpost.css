@@ -15,7 +15,7 @@
 .card-price {
     display: flex;
     align-items: center; /* Alinea el precio y la unidad en la misma línea */
-    font-size: 17px;
+    font-size: 15px;
     color: #333; /* Color del texto */
     
 }
@@ -26,24 +26,27 @@
 }
 
 .card-date {
-    margin-top: 4px; /* Espacio entre el precio y la fecha */
-    font-size: 17px;
-    color: #666; /* Color de texto más suave */
+    margin-top: 2px; /* Espacio entre el precio y la fecha */
+    font-size: 15px;
+    color: rgb(56, 56, 56); /* Color de texto más suave */
     margin-left: 7px;
 }
 
 .text-dat {
-    font-style: italic; /* Estilo cursiva para la fecha */
+    font-style:normal
 }
 
 /* Estilos para el ícono de comentarios */
 .fa-comment-alt {
-    margin-right: 4px; /* Espacio entre el ícono y el número de comentarios */
-    color: #666; /* Color del ícono */
+    margin-right: 9px; /* Espacio entre el ícono y el número de comentarios */
+    
+    font-size: 18px;
 }
 
 h6 {
     margin: 0; /* Elimina el margen predeterminado */
     font-size: 14px;
-    color: #333; /* Color del texto */
+    font-weight:500;
+    color: rgb(56, 56, 56); /* Color de texto más suave */
+
 }
