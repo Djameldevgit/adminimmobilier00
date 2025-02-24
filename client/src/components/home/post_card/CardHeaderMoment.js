@@ -15,7 +15,7 @@ const CardHeaderMoment = () => {
                
                 <div className="card_name">
                  
-                    <small className="text-muted">
+                    <small className="text-dat">
                         {moment(post.createdAt).fromNow()}
                     </small>
                 </div>

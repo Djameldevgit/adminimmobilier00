@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-
+import moment from 'moment';
+import 'moment/locale/fr'; // Importa el idioma francés
 const CardFooterCommentLikes = ({ post }) => {
     const history = useHistory();
     const location = useLocation();
     const isDetailPage = location.pathname === `/post/${post._id}`;
     const { t } = useTranslation();
+    moment.locale('fr'); // Establece el idioma a francés
 
     const { auth, languageReducer } = useSelector((state) => state); // Obtiene auth y languageReducer del estado global
     const [showModal, setShowModal] = useState(false);
@@ -25,20 +27,25 @@ const CardFooterCommentLikes = ({ post }) => {
     return (
         <>
             <div className="card_footer">
-                <div className="footer-content d-flex justify-content-between align-items-center mt-2 mx-3">
-                    <div className="d-flex align-items-center">
-                        <span className="mr-2">Price:</span>
+                <div className="footer-content">
+                    {/* Precio y unidad del precio */}
+                    <div className="card-price">
+                        <span className="mr-2">Prix:</span>
                         <span className="mr-3 text-danger">{post.price}</span>
                         <span>{post.unidaddeprecio}</span>
                     </div>
 
-                    <h6
-                        className="mt-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={handleCommentClick}
-                    >
+                    {/* Comentarios */}
+                    <h6 className="mt-2" style={{ cursor: "pointer" }} onClick={handleCommentClick}>
                         <i className="fas fa-comment-alt"></i> {post.comments.length}
                     </h6>
+                </div>
+
+                {/* Fecha de creación del post */}
+                <div className="card-date">
+                    <small className="text-dat">
+                        {moment(post.createdAt).fromNow()}
+                    </small>
                 </div>
             </div>
 

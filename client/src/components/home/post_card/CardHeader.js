@@ -55,38 +55,7 @@ const CardHeader = ({ post }) => {
                             <div className="dropdown-item" onClick={handleDeletePost}>
                                 <span className="material-icons">delete_outline</span> Eliminar Post
                             </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">push_pin</span> Fijar Post
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">unarchive</span> Desfijar Post
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">visibility</span> Cambiar Visibilidad
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">schedule</span> Programar Post
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">analytics</span> Ver Estadísticas
-                            </div>
-                            <div className="dropdown-item">
-                                <span className="material-icons">content_copy</span> Duplicar Post
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">archive</span> Archivar Post
-                            </div>
-                             
-                            <div className="dropdown-item" >
-                                <span className="material-icons">category</span> Cambiar Categoría
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">person_add</span> Añadir Colaborador
-                            </div>
-                            <div className="dropdown-item" >
-                                <span className="material-icons">download</span> Descargar Post
-                            </div>
-                        </>
+                                         </>
                 ) : (
                 // 📌 Si el usuario está autenticado pero no es dueño del post
                 <>
@@ -96,48 +65,14 @@ const CardHeader = ({ post }) => {
                     <div className="dropdown-item">
                         <span className="material-icons">delete</span> Eliminar Post
                     </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">comment</span> Comentar en el Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">thumb_up</span> Dar Like al Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">bookmark</span> Guardar en Favoritos
-                    </div>
+                    
                     <div className="dropdown-item">
                         <span className="material-icons">notifications</span> Activar Notificaciones
                     </div>
                     <div className="dropdown-item">
                         <span className="material-icons">report</span> Denunciar Post
                     </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">share</span> Compartir Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">visibility_off</span> Ocultar Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">flag</span> Marcar como Inapropiado
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">person_add</span> Seguir al Autor
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">message</span> Enviar Mensaje al Autor
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">archive</span> Archivar Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">link</span> Copiar Enlace del Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">print</span> Imprimir Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">feedback</span> Enviar Feedback
-                    </div>
+                  
                 </>
                 )
                 ) : (
@@ -152,36 +87,9 @@ const CardHeader = ({ post }) => {
                     <div className="dropdown-item">
                         <span className="material-icons">filter_list</span> Filtrar por Categoría
                     </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">sort</span> Ordenar por Más Recientes
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">trending_up</span> Ver Tendencias
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">description</span> Ver Contenido Relacionado
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">poll</span> Participar en Encuestas
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">download</span> Descargar Recursos
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">mail</span> Suscribirse al Newsletter
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">help</span> Ver Preguntas Frecuentes
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">report</span> Denunciar Post
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">notifications</span> Activar Notificaciones
-                    </div>
-                    <div className="dropdown-item">
-                        <span className="material-icons">bookmark</span> Guardar Post
-                    </div>
+                   
+              
+                
                 </>
                     )}
 

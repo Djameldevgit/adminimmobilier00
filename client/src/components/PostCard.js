@@ -4,12 +4,13 @@ import CardBodyCarousel from './home/post_card/CardBodyCarousel';
 import InputComment from './home/InputComment';
 import CardFooterCommentLikes from './home/post_card/CardFooterCommentLikes';
 import Comments from './home/Comments';
-import DescriptionAttributePost from './home/post_card/DescriptionAttributePost';
+ 
 import DescriptionPost from './home/post_card/DescriptionPost';
 import InformationUserPost from './home/post_card/InformationUserPost';
 import { useLocation } from "react-router-dom";
 import CardBodyTitle from './home/post_card/CardBodyTitle';
 import { useSelector } from 'react-redux';
+import ProductDetail from './home/post_card/ProductDetail';
 
 const PostCard = ({ post }) => {
     const location = useLocation();
@@ -24,7 +25,7 @@ const PostCard = ({ post }) => {
             <CardBodyCarousel post={post} />
              <CardFooterCommentLikes post={post} /> 
             
-            {isPostDetailPage &&   <DescriptionAttributePost post={post} />}
+            {isPostDetailPage &&   <ProductDetail post={post} />}
            
             {isPostDetailPage && <DescriptionPost post={post} />}
             
