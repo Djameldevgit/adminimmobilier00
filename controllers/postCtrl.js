@@ -144,7 +144,7 @@ const postCtrl = {
                     quartier, email, telefono, contadordevisitas, informacioncontacto, activarcomentarios,duraciondelanuncio,   attributes, images
                 },
                 { new: true } // Para que retorne el post actualizado
-            ).populate("user likes", "avatar username fullname")
+            ).populate("user likes", "avatar username")
                 .populate({
                     path: "comments",
                     populate: {
@@ -217,7 +217,7 @@ const postCtrl = {
     getPost: async (req, res) => {
         try {
             const post = await Posts.findById(req.params.id)
-            .populate("user likes", "avatar username fullname followers")
+            .populate("user likes", "avatar username followers")
             .populate({
                 path: "comments",
                 populate: {

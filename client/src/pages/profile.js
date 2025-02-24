@@ -8,12 +8,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import LoadIcon from '../images/loading.gif'
 import { getProfileUsers } from '../redux/actions/profileAction'
 import { useParams } from 'react-router-dom'
-
+import { useTranslation } from 'react-i18next'
 
 const Profile = () => {
-    const { profile, auth } = useSelector(state => state)
+    const { profile, auth ,languageReducer } = useSelector(state => state)
     const dispatch = useDispatch()
-
+   
+    const { t } = useTranslation()
     const { id } = useParams()
     const [saveTab, setSaveTab] = useState(false)
 
@@ -31,8 +32,8 @@ const Profile = () => {
             {
                 auth.user._id === id &&
                 <div className="profile_tab">
-                    <button className={saveTab ? '' : 'active'} onClick={() => setSaveTab(false)}>Posts</button>
-                    <button className={saveTab ? 'active' : ''} onClick={() => setSaveTab(true)}>Saved</button>
+                    <button className={saveTab ? '' : 'active'} onClick={() => setSaveTab(false)}>{t('My Posts', { lng: languageReducer.language })}</button>
+                    <button className={saveTab ? 'active' : ''} onClick={() => setSaveTab(true)}> {t('Saved', { lng: languageReducer.language })}</button>
                 </div>
             }
 

@@ -12,8 +12,8 @@ router.get('/users', auth, userCtrl.getUsers)
 router.get('/search', auth, userCtrl.searchUser)
 
 router.get('/user/:id', auth, userCtrl.getUser)
-
-router.patch('/user/:id', auth, userCtrl.updateUser)
+router.patch('/user', auth, userCtrl.updateUser)
+ 
 router.get('/suggestionsUser', auth, userCtrl.suggestionsUser)
    
 router.patch('/user/:id/follow', auth, userCtrl.follow)

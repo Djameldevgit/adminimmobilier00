@@ -179,7 +179,7 @@ export const updatePost = ({ postData, images,wilaya, commune, auth, status }) =
         && status.unidaddeprecio === postData.unidaddeprecio
         && status.oferta === postData.oferta
         && status.change === postData.change 
-     &&    status.wilaya, "postData.wilaya:", postData.wilaya
+     &&   console.log("status.wilaya:", status.wilaya, "postData.wilaya:", postData.wilaya)
      &&   console.log("status.commune:", status.commune, "postData.commune:", postData.commune)
     
        

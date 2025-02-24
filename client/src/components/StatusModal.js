@@ -345,9 +345,9 @@ const StatusModal = () => {
                 onChange={handleChangeInput}
                 value={postData.title} name="title" className="form-control" required >  <option value="">Sélectionner une sub catégorie</option>
                 <option value="Appartement">Appartement</option>
-                <option value="Terrain">Terrain</option>
-                <option value="Villa">Villa</option>
+                 <option value="Villa">Villa</option>
                 <option value="Local">Local</option>
+                <option value="Terrain">Terrain</option>
                 <option value="Carcasse">Carcasse</option>
                 <option value="Niveau de villa">Niveau de Villa</option>
                 <option value="Terrain Agricole">Terrain Agricole</option>

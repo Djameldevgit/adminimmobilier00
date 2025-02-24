@@ -3,13 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { checkImage } from '../../utils/imageUpload'
 import { GLOBALTYPES } from '../../redux/actions/globalTypes'
 import { updateProfileUser } from '../../redux/actions/profileAction'
-
+import { useTranslation } from 'react-i18next'
 const EditProfile = ({setOnEdit}) => {
+    const { languageReducer } = useSelector(state => state)
+    const { t } = useTranslation()
+
     const initState = {
-        username: '', mobile: '', address: '', website: '', story: '' 
+       username:'',  mobile: '', address: '', website: '', story: '' 
     }
     const [userData, setUserData] = useState(initState)
-    const { username, mobile, address, website, story } = userData
+    const { username, mobile, address, website, story  } = userData
 
     const [avatar, setAvatar] = useState('')
 
@@ -46,7 +49,7 @@ const EditProfile = ({setOnEdit}) => {
         <div className="edit_profile">
             <button className="btn btn-danger btn_close"
             onClick={() => setOnEdit(false)}>
-                Close
+               {t('Close', { lng: languageReducer.language })}
             </button>
 
             <form onSubmit={handleSubmit}>
@@ -62,7 +65,7 @@ const EditProfile = ({setOnEdit}) => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="fullname">User Name</label>
+                    <label htmlFor="fullname">{t('user name', { lng: languageReducer.language })}</label>
                     <div className="position-relative">
                         <input type="text" className="form-control" id="fullname"
                         name="username" value={username} onChange={handleInput} />
@@ -74,25 +77,25 @@ const EditProfile = ({setOnEdit}) => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="mobile">Mobile</label>
+                    <label htmlFor="mobile">{t('Mobile', { lng: languageReducer.language })}</label>
                     <input type="text" name="mobile" value={mobile}
                     className="form-control" onChange={handleInput} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="address">Address</label>
+                    <label htmlFor="address"> {t('Address', { lng: languageReducer.language })}</label>
                     <input type="text" name="address" value={address}
                     className="form-control" onChange={handleInput} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="website">Website</label>
+                    <label htmlFor="website"> {t('Website', { lng: languageReducer.language })}</label>
                     <input type="text" name="website" value={website}
                     className="form-control" onChange={handleInput} />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="story">Story</label>
+                    <label htmlFor="story">{t('Story', { lng: languageReducer.language })}</label>
                     <textarea name="story" value={story} cols="30" rows="4"
                     className="form-control" onChange={handleInput} />
 
@@ -101,9 +104,9 @@ const EditProfile = ({setOnEdit}) => {
                     </small>
                 </div>
 
-              
+                
 
-                <button className="btn btn-info w-100" type="submit">Save</button>
+                <button className="btn btn-info w-100" type="submit"> {t('Save', { lng: languageReducer.language })}</button>
             </form>
         </div>
     )
